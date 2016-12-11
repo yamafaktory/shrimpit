@@ -1,0 +1,41 @@
+{
+  "name": "shrimpit",
+  "version": "0.0.0",
+  "title": "shrimpit",
+  "description": "A CLI tool for checking unused exported files in your project.",
+  "keywords": [
+    "es6",
+    "export",
+    "import"
+  ],
+  "homepage": "https://github.com/yamafaktory/shrimpit",
+  "author": {
+    "name": "Davy Duperron",
+    "url": "https://github.com/yamafaktory"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yamafaktory/shrimpit"
+  },
+  "engines": {
+    "npm": ">=3.0.0",
+    "node": ">=6.0.0"
+  },
+  "dependencies": {
+    "babylon": "6.14.1",
+    "babel-traverse": "6.20.0",
+    "lodash.merge": "4.6.0"
+  },
+  "devDependencies": {
+    "snazzy": "5.0.0",
+    "standard": "8.6.0"
+  },
+  "scripts": {
+    "std": "standard --verbose | snazzy",
+    "start": "node index.js",
+    "preversion": "git pull && npm up && npm run std --silent",
+    "version": "npm run build && git add -A .",
+    "postversion": "git push --tags origin HEAD"
+  }
+}
