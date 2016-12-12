@@ -37,5 +37,10 @@
     "preversion": "git pull && npm up && npm run std --silent",
     "version": "npm run build && git add -A .",
     "postversion": "git push --tags origin HEAD"
+  },
+  "standard": {
+    "ignore": [
+      "test"
+    ]
   }
 }

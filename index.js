@@ -47,25 +47,9 @@ class Shrimpit {
     this.updateFilesTree([...this.getDir(extPath), this.getBase(extPath)], this.walkAST(extPath))
   }
 
-  deepFindIdentifiers (obj) {
-    const identifiers = []
-    const find = obj => {
-      if (obj === null) return
-
-      if (obj.type === 'Identifier') identifiers.push(obj.name)
-
-      for (let prop in obj) {
-        if (obj.hasOwnProperty(prop) && typeof obj[prop] === 'object') {
-          find(obj[prop])
-        }
-      }
-    }
-
-    // Trigger recursive find.
-    find(obj)
-
+  dedupe (array) {
     // Dedupe with a set.
-    return [...new Set(identifiers)]
+    return [...new Set(array)]
   }
 
   error (e) {
@@ -143,30 +127,62 @@ class Shrimpit {
   }
 
   render () {
-    log('----------------------------')
     log(this.filesTree)
   }
 
   walkAST (extPath) {
-    const modules = {
-      exports: {},
-      imports: {}
+    const exports = []
+    const imports = []
+    const exportVisitor = {
+      Identifier (path) {
+        exports.push(path.node.name)
+        // Stop traversal to avoid collecting unwanted identifiers.
+        path.stop()
+      }
     }
-    const self = this
 
     traverse(this.getAST(fs.readFileSync(extPath, { encoding: 'utf8' })), {
-      enter(path) {
-        log(path.node)
-        const isExport = /^Export/.test(path.node.type)
-        const isImport = /^Import/.test(path.node.type)
+      ExportAllDeclaration (path) {
+        path.traverse(exportVisitor)
+      },
 
-        if (isExport || isImport) {
-          modules[`${isExport ? 'exports' : 'imports'}`] = self.deepFindIdentifiers(path.node)
-        }
+      ExportDefaultDeclaration (path) {
+        path.traverse(exportVisitor)
+      },
+
+      ExportDefaultSpecifier (path) {
+        path.traverse(exportVisitor)
+      },
+
+      ExportNamedDeclaration (path) {
+        path.traverse(exportVisitor)
+      },
+
+      ExportNamespaceSpecifier (path) {
+        path.traverse(exportVisitor)
+      },
+
+      ExportSpecifier (path) {
+        path.traverse(exportVisitor)
+      },
+
+      ImportDefaultSpecifier (path) {
+        imports.push(path.node.local.name)
+      },
+
+      ImportNamespaceSpecifier (path) {
+        imports.push(path.node.local.name)
+      },
+
+      ImportSpecifier (path) {
+        imports.push(path.node.local.name)
       }
     })
 
-    return modules
+    return {
+      exports: this.dedupe(exports),
+      imports: this.dedupe(imports)
+    }
   }
 }
 
