@@ -1,3 +1,3 @@
-# Shrimpit :shrimp:
+# Shrimpit :fried_shrimp:
 
 (wip)
