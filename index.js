@@ -3,10 +3,12 @@ const path = require('path')
 const util = require('util')
 
 const babylon = require('babylon')
+const chalk = require('chalk')
 const merge = require('lodash.merge')
 const traverse = require('babel-traverse').default
 
-const log = i => console.log(util.inspect(i, false, null, true))
+const log = i => console.log(i, '\n')
+const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
 
 class Shrimpit {
   constructor (argv) {
@@ -15,6 +17,10 @@ class Shrimpit {
 
     this.allowedTypes = /^\.jsx?$/
     this.filesTree = {}
+    this.modules = {
+      exports: [],
+      imports: []
+    }
     this.parseOpts = {
       plugins: [
         'asyncFunctions',
@@ -47,19 +53,34 @@ class Shrimpit {
     this.updateFilesTree([...this.getDir(extPath), this.getBase(extPath)], this.walkAST(extPath))
   }
 
+  checkModules () {
+    const { exports, imports } = this.modules
+
+    this.modules.exports = this.dedupe(exports)
+    this.modules.imports = this.dedupe(imports)
+
+    log(chalk.black.bgWhite(' > All exports and imports '))
+    objectLog(this.modules)
+  }
+
   dedupe (array) {
     // Dedupe with a set.
     return [...new Set(array)]
   }
 
   error (e) {
-    log(e)
+    log(chalk.red(e))
   }
 
   exec () {
+    log(chalk.white.bgMagenta.bold(' Shrimpit! '))
+
+    // Start reading and parsing the directories.
     this.src.map(target => this.read(null, target))
 
-    this.render()
+    this.checkModules()
+
+    this.renderTree()
   }
 
   getAST (src) {
@@ -120,19 +141,24 @@ class Shrimpit {
     if (this.isDir(extPath)) {
       this.addDir(extPath)
 
-      fs.readdirSync(extPath).map(file => this.read(extPath, file))
+      try {
+        fs.readdirSync(extPath).map(file => this.read(extPath, file))
+      } catch (e) {
+        this.error(e)
+      }
     } else if (this.isFile(extPath)) {
       this.addFile(extPath)
     }
   }
 
-  render () {
-    log(this.filesTree)
+  renderTree () {
+    log(chalk.black.bgWhite(' > Files tree '))
+    objectLog(this.filesTree)
   }
 
   walkAST (extPath) {
-    const exports = []
-    const imports = []
+    let exports = []
+    let imports = []
     const exportVisitor = {
       Identifier (path) {
         exports.push(path.node.name)
@@ -179,10 +205,13 @@ class Shrimpit {
       }
     })
 
-    return {
-      exports: this.dedupe(exports),
-      imports: this.dedupe(imports)
-    }
+    exports = this.dedupe(exports)
+    this.modules.exports.push(...exports)
+
+    imports = this.dedupe(imports)
+    this.modules.imports.push(...imports)
+
+    return { exports, imports }
   }
 }
 
