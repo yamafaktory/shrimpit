@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
@@ -40,7 +42,7 @@ class Shrimpit {
       ],
       sourceType: 'module'
     }
-    this.src = src
+    this.src = this.cleanSrc(src)
   }
 
   addDir (extPath) {
@@ -53,14 +55,12 @@ class Shrimpit {
     this.updateFilesTree([...this.getDir(extPath), this.getBase(extPath)], this.walkAST(extPath))
   }
 
-  checkModules () {
-    const { exports, imports } = this.modules
+  cleanSrc (src) {
+    return src.filter(s => {
+      if (s === '-tree') this.displayTree = true
 
-    this.modules.exports = this.dedupe(exports)
-    this.modules.imports = this.dedupe(imports)
-
-    log(chalk.black.bgWhite(' > All exports and imports '))
-    objectLog(this.modules)
+      return s !== '-tree'
+    })
   }
 
   dedupe (array) {
@@ -69,7 +69,9 @@ class Shrimpit {
   }
 
   error (e) {
-    log(chalk.white.bgRed(`! ${e} `))
+    log(chalk.red(`! ${e} `))
+
+    process.exit(1)
   }
 
   exec () {
@@ -78,9 +80,9 @@ class Shrimpit {
     // Start reading and parsing the directories.
     this.src.map(target => this.read(null, target))
 
-    this.checkModules()
+    if (this.displayTree) this.renderTree()
 
-    this.renderTree()
+    this.renderUnused()
   }
 
   getAST (src) {
@@ -119,20 +121,6 @@ class Shrimpit {
     }
   }
 
-  updateFilesTree (arrayPath, modules = null) {
-    const arrayPathCleaned = arrayPath.filter(segment => segment !== '')
-
-    this.filesTree = merge(
-      this.filesTree,
-      JSON.parse([
-        '{',
-        arrayPathCleaned.map(segment => `"${segment}"`).join(':{'),
-        `:${JSON.stringify(modules)}`,
-        '}'.repeat(arrayPathCleaned.length)
-      ].join(''))
-    )
-  }
-
   read (rootPath, target) {
     const extPath = path.normalize(
       `${rootPath !== null ? rootPath + '/' : ''}${target}`
@@ -152,16 +140,48 @@ class Shrimpit {
   }
 
   renderTree () {
-    log(chalk.black.bgWhite(' > Files tree '))
+    log(chalk.magenta.bgWhite(' > Files tree '))
+
     objectLog(this.filesTree)
+  }
+
+  renderUnused () {
+    const { exports, imports } = this.modules
+    let unresolved = new Set(this.dedupe(exports))
+
+    this.dedupe(imports).forEach(i => unresolved.delete(i))
+
+    log(chalk.magenta.bgWhite(' > Unused exports '))
+
+    if (unresolved.size === 0) {
+      log(chalk.yellow('All Clear Ahead, Captain.'))
+    } else {
+      objectLog([...unresolved])
+    }
+  }
+
+  updateFilesTree (arrayPath, modules = null) {
+    const arrayPathCleaned = arrayPath.filter(segment => segment !== '')
+
+    this.filesTree = merge(
+      this.filesTree,
+      JSON.parse([
+        '{',
+        arrayPathCleaned.map(segment => `"${segment}"`).join(':{'),
+        `:${JSON.stringify(modules)}`,
+        '}'.repeat(arrayPathCleaned.length)
+      ].join(''))
+    )
   }
 
   walkAST (extPath) {
     let exports = []
     let imports = []
+
     const exportVisitor = {
       Identifier (path) {
         exports.push(path.node.name)
+
         // Stop traversal to avoid collecting unwanted identifiers.
         path.stop()
       }
