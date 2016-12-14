@@ -1,6 +1,6 @@
 {
   "name": "shrimpit",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "title": "shrimpit",
   "description": "A CLI tool for checking unused exported JavaScript & JSX files in your project.",
   "keywords": [
@@ -36,7 +36,6 @@
     "std": "standard --verbose | snazzy",
     "start": "node index.js",
     "preversion": "git pull && npm up && npm run std --silent",
-    "version": "npm run build && git add -A .",
     "postversion": "git push --tags origin HEAD"
   },
   "standard": {
