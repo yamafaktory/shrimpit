@@ -2,8 +2,10 @@
   "name": "shrimpit",
   "version": "0.1.1",
   "title": "shrimpit",
-  "description": "A CLI tool for checking unused exported JavaScript & JSX files in your project.",
+  "description": "A CLI analysis tool for checking unused JavaScript & JSX ES6 exports in your project.",
   "keywords": [
+    "babel",
+    "cli",
     "es6",
     "export",
     "import"
@@ -32,9 +34,11 @@
     "snazzy": "5.0.0",
     "standard": "8.6.0"
   },
+  "bin": {
+    "shrimpit": "index.js"
+  },
   "scripts": {
     "std": "standard --verbose | snazzy",
-    "start": "node index.js",
     "preversion": "git pull && npm up && npm run std --silent",
     "postversion": "git push --tags origin HEAD"
   },
