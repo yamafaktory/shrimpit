@@ -39,7 +39,8 @@
   },
   "scripts": {
     "std": "standard --verbose | snazzy",
-    "preversion": "git pull && npm up && npm run std --silent",
+    "test": "node index.js --tree test",
+    "preversion": "git pull && npm up && npm run std --silent && npm test",
     "postversion": "git push --tags origin HEAD"
   },
   "standard": {
