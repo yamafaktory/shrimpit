@@ -1,14 +1,24 @@
-# Shrimpit :fried_shrimp: [![Build Status](https://travis-ci.org/yamafaktory/shrimpit.svg?branch=master)](https://travis-ci.org/yamafaktory/shrimpit)
+# Shrimpit :fried_shrimp: [![Build Status](https://travis-ci.org/yamafaktory/shrimpit.svg?branch=master)](https://travis-ci.org/yamafaktory/shrimpit) [![npm version](https://img.shields.io/npm/v/shrimpit.svg?style=flat)](https://www.npmjs.com/package/shrimpit) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-Shrimpit is a small CLI analysis tool for checking unused exported JavaScript & JSX files in your project.
+Shrimpit is a small CLI analysis tool for checking unused JavaScript & JSX ES6 exports in your project.
 
 ## Usage
 
 ```shell
-npm i shrimpit
+npm i -g shrimpit
 
-npm start path/to/your/source /another/path
+shrimpit path/to/your/files /another/path
 ```
+
+Adding the `--tree` flag will output the complete files tree with all the imports and the exports per file:
+
+```shell
+shrimpit --tree path/to/your/files
+```
+
+## Linting
+
+The code quality is checked by the [JavaScript Standard Style](http://standardjs.com/).
 
 ## License
 
