@@ -69,7 +69,7 @@ class Shrimpit {
   }
 
   error (e) {
-    log(chalk.red(e))
+    log(chalk.white.bgRed(`! ${e} `))
   }
 
   exec () {
