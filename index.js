@@ -57,9 +57,9 @@ class Shrimpit {
 
   cleanSrc (src) {
     return src.filter(s => {
-      if (s === '-tree') this.displayTree = true
+      if (s === '--tree') this.displayTree = true
 
-      return s !== '-tree'
+      return s !== '--tree'
     })
   }
 
