@@ -1,6 +1,6 @@
 {
   "name": "shrimpit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "shrimpit",
   "description": "A CLI analysis tool for checking unused JavaScript & JSX ES6 exports in your project.",
   "keywords": [
