@@ -154,11 +154,8 @@ class Shrimpit {
 
     log(chalk.magenta.bgWhite(' > Unused exports '))
 
-    if (unresolved.size === 0) {
-      log(chalk.yellow('All Clear Ahead, Captain.'))
-    } else {
-      objectLog([...unresolved])
-    }
+    if (unresolved.size === 0) log(chalk.yellow('All Clear Ahead, Captain.'))
+    else objectLog([...unresolved])
   }
 
   updateFilesTree (arrayPath, modules = null) {
