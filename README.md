@@ -16,6 +16,8 @@ Adding the `--tree` flag will output the complete files tree with all the import
 shrimpit --tree path/to/your/files
 ```
 
+Shrimpit supports [Flow annotations](https://flowtype.org/) out of the box!
+
 ## Linting
 
 The code quality is checked by the [JavaScript Standard Style](http://standardjs.com/).
