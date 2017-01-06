@@ -24,6 +24,7 @@ class Shrimpit {
       imports: []
     }
     this.parseOpts = {
+      allowImportExportEverywhere: true,
       plugins: [
         'asyncFunctions',
         'asyncGenerators',
