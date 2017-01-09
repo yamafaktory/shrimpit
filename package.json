@@ -2,13 +2,16 @@
   "name": "shrimpit",
   "version": "0.5.0",
   "title": "shrimpit",
-  "description": "A CLI analysis tool for checking unused JavaScript & JSX ES6 exports in your project.",
+  "description": "A CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.",
   "keywords": [
     "babel",
     "cli",
     "es6",
     "export",
-    "import"
+    "import",
+    "jsx",
+    "react",
+    "vue"
   ],
   "homepage": "https://github.com/yamafaktory/shrimpit",
   "author": {
