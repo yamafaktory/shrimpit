@@ -203,7 +203,7 @@ class Shrimpit {
     }
 
     const exportVisitor = {
-      Identifier (path, expectNamedFunction) {
+      Identifier (path) {
         exports.push(path.node.name)
 
         // Stop traversal to avoid collecting unwanted identifiers.
