@@ -93,11 +93,11 @@ class Shrimpit {
     this.renderUnused()
   }
 
-  getAST (src) {
+  getAST (src, path) {
     try {
       return babylon.parse(src, this.parseOpts)
     } catch (e) {
-      this.error(e)
+      this.error(`${e} in ${path}`)
     }
   }
 
@@ -215,7 +215,7 @@ class Shrimpit {
       }
     }
 
-    traverse(this.getAST(fs.readFileSync(extPath, { encoding: 'utf8' })), {
+    traverse(this.getAST(fs.readFileSync(extPath, { encoding: 'utf8' }), extPath), {
       ExportAllDeclaration (path) {
         path.traverse(exportVisitor)
       },
