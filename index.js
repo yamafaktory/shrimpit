@@ -6,6 +6,7 @@ const util = require('util')
 
 const babylon = require('babylon')
 const chalk = require('chalk')
+const cheerio = require('cheerio')
 const merge = require('lodash.merge')
 const traverse = require('babel-traverse').default
 
@@ -17,8 +18,9 @@ class Shrimpit {
     // Remove execPath and path from argv.
     const [, , ...src] = argv
 
-    this.allowedTypes = /^\.jsx?$/
+    this.allowedTypes = /^\.(jsx?|vue)$/
     this.filesTree = {}
+    this.isVueTemplate = /^\.vue$/
     this.modules = {
       exports: [],
       imports: []
@@ -69,11 +71,13 @@ class Shrimpit {
     return [...new Set(array)]
   }
 
-  deExtensionize (path) {
-    return [
-      ...this.getDir(path),
-      this.getBase(path, true)
-    ].join('/')
+  deExtensionize (filePath) {
+    const base = this.getBase(filePath, true)
+
+    return path.dirname([
+      ...this.getDir(filePath),
+      base === 'index' ? [] : base
+    ].join('/'))
   }
 
   error (e) {
@@ -151,6 +155,18 @@ class Shrimpit {
     }
   }
 
+  readFile (path) {
+    try {
+      const content = fs.readFileSync(path, { encoding: 'utf8' })
+
+      return this.isVueTemplate.test(this.getExt(path))
+        ? cheerio.load(content)('script').text()
+        : content
+    } catch (e) {
+      this.error(e)
+    }
+  }
+
   renderTree () {
     log(chalk.magenta.bgWhite(' > Files tree '))
 
@@ -215,7 +231,7 @@ class Shrimpit {
       }
     }
 
-    traverse(this.getAST(fs.readFileSync(extPath, { encoding: 'utf8' }), extPath), {
+    traverse(this.getAST(this.readFile(extPath), extPath), {
       ExportAllDeclaration (path) {
         path.traverse(exportVisitor)
       },
@@ -241,7 +257,9 @@ class Shrimpit {
       },
 
       ImportDefaultSpecifier (path) {
-        imports.push(self.joinPaths(extPath, '../', path.parent.source.value))
+        imports.push(
+          self.deExtensionize(self.joinPaths(extPath, '../', path.parent.source.value))
+        )
       },
 
       ImportNamespaceSpecifier (path) {
