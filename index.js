@@ -69,6 +69,13 @@ class Shrimpit {
     return [...new Set(array)]
   }
 
+  deExtensionize (path) {
+    return [
+      ...this.getDir(path),
+      this.getBase(path, true)
+    ].join('/')
+  }
+
   error (e) {
     log(chalk.red(`! ${e} `))
 
@@ -94,8 +101,8 @@ class Shrimpit {
     }
   }
 
-  getBase (extPath) {
-    return path.parse(extPath).base
+  getBase (extPath, dropExt) {
+    return dropExt ? path.parse(extPath).name : path.parse(extPath).base
   }
 
   getDir (extPath) {
@@ -120,6 +127,10 @@ class Shrimpit {
     } catch (e) {
       this.error(e)
     }
+  }
+
+  joinPaths (...paths) {
+    return path.join(...paths)
   }
 
   read (rootPath, target) {
@@ -173,8 +184,20 @@ class Shrimpit {
   }
 
   walkAST (extPath) {
+    const self = this
     let exports = []
     let imports = []
+
+    const defaultExportVisitor = {
+      Expression (path) {
+        // Use path as default.
+        exports.push(self.deExtensionize(extPath))
+      },
+
+      Function (path) {
+        path.traverse(exportVisitor, true)
+      }
+    }
 
     const exportVisitor = {
       Identifier (path) {
@@ -182,6 +205,10 @@ class Shrimpit {
 
         // Stop traversal to avoid collecting unwanted identifiers.
         path.stop()
+      },
+
+      Statement (path, expectNamedFunction) {
+        if (expectNamedFunction) exports.push(self.deExtensionize(extPath))
       }
     }
 
@@ -191,7 +218,7 @@ class Shrimpit {
       },
 
       ExportDefaultDeclaration (path) {
-        path.traverse(exportVisitor)
+        path.traverse(defaultExportVisitor)
       },
 
       ExportDefaultSpecifier (path) {
@@ -211,7 +238,7 @@ class Shrimpit {
       },
 
       ImportDefaultSpecifier (path) {
-        imports.push(path.node.local.name)
+        imports.push(self.joinPaths(extPath, '../', path.parent.source.value))
       },
 
       ImportNamespaceSpecifier (path) {
