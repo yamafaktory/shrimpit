@@ -192,6 +192,9 @@ class Shrimpit {
       Expression (path) {
         // Use path as default.
         exports.push(self.deExtensionize(extPath))
+
+        // Stop traversal as an expression was found.
+        path.stop()
       },
 
       Function (path) {
@@ -200,7 +203,7 @@ class Shrimpit {
     }
 
     const exportVisitor = {
-      Identifier (path) {
+      Identifier (path, expectNamedFunction) {
         exports.push(path.node.name)
 
         // Stop traversal to avoid collecting unwanted identifiers.
