@@ -16,7 +16,29 @@ Adding the `--tree` flag will output the complete files tree with all the import
 shrimpit --tree path/to/your/files
 ```
 
-Please note that default unnamed exports are rendered as paths.
+Please note that default unnamed exports are rendered as paths:
+
+``` shell
+shrimpit test --tree
+ Shrimpit!
+
+ > Files tree
+
+{ test:
+   { a:
+      { 'a1.js': { exports: [ 'a11', 'a12' ], imports: [ 'test/a' ] },
+        'a2.js': { exports: [ 'a2' ], imports: [ 'test' ] },
+        'a4.js': { exports: [ 'a4', 'test/a' ], imports: [ 'a11', 'a12' ] } },
+     b:
+      { 'b1.js': { exports: [ 'b1', 'test/b' ], imports: [] },
+        'b2.js': { exports: [ 'test/b' ], imports: [] } } } }
+
+ > Unused exports
+
+[ 'a2', 'a4', 'b1', 'test/b' ]
+```
+
+## Flow & Vue
 
 Shrimpit supports [Flow annotations](https://flowtype.org/) and Vue templates out of the box!
 
