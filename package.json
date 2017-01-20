@@ -35,7 +35,7 @@
     "lodash.merge": "4.6.0"
   },
   "devDependencies": {
-    "snazzy": "5.0.0",
+    "snazzy": "6.0.0",
     "standard": "8.6.0"
   },
   "bin": {
