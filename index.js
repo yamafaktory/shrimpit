@@ -62,6 +62,8 @@ class Shrimpit {
     return src.filter(s => {
       if (s === '--tree') this.displayTree = true
 
+      if (s === '--help') this.displayHelp = true
+
       return s !== '--tree'
     })
   }
@@ -88,6 +90,8 @@ class Shrimpit {
 
   exec () {
     log(chalk.white.bgMagenta.bold(' Shrimpit! '))
+
+    if (this.displayHelp) return this.renderHelp()
 
     // Start reading and parsing the directories.
     this.src.map(target => this.read(null, target))
@@ -165,6 +169,20 @@ class Shrimpit {
     } catch (e) {
       this.error(e)
     }
+  }
+
+  renderHelp () {
+    log([
+      'Usage:',
+      '  shrimpit [<file | directory> ...]',
+      '',
+      'Options:',
+      ' --tree  Output the complete files tree',
+      '',
+      'Examples:',
+      '  shrimpit test/a/a2.js',
+      '  shrimpit test'
+    ].join('\n'))
   }
 
   renderTree () {
