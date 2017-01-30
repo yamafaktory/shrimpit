@@ -60,11 +60,24 @@ class Shrimpit {
 
   cleanSrc (src) {
     return src.filter(s => {
-      if (s === '--tree') this.displayTree = true
+      const flagRegex = /^--(\w+)$/i
 
-      if (s === '--help') this.displayHelp = true
+      if (flagRegex.test(s)) {
+        switch (s.match(flagRegex)[1]) {
+          case 'help':
+            this.displayHelp = true
+            break
 
-      return s !== '--tree'
+          case 'tree':
+            this.displayTree = true
+            break
+
+          default:
+            this.displayUnknownFlag = true
+        }
+      }
+
+      return !flagRegex.test(s)
     })
   }
 
@@ -90,6 +103,8 @@ class Shrimpit {
 
   exec () {
     log(chalk.white.bgMagenta.bold(' Shrimpit! '))
+
+    if (this.displayUnknownFlag) return this.renderUnknownFlag()
 
     if (this.displayHelp) return this.renderHelp()
 
@@ -189,6 +204,10 @@ class Shrimpit {
     log(chalk.magenta.bgWhite(' > Files tree '))
 
     objectLog(this.filesTree)
+  }
+
+  renderUnknownFlag () {
+    this.error('Unknown flag provided, try --help.')
   }
 
   renderUnused () {
