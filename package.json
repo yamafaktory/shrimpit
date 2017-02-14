@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "babylon": "6.15.0",
-    "babel-traverse": "6.22.1",
+    "babel-traverse": "6.23.1",
     "chalk": "1.1.3",
     "cheerio": "0.22.0",
     "lodash.merge": "4.6.0"
