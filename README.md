@@ -1,5 +1,7 @@
 # Shrimpit :fried_shrimp: [![Build Status](https://travis-ci.org/yamafaktory/shrimpit.svg?branch=master)](https://travis-ci.org/yamafaktory/shrimpit) [![npm version](https://img.shields.io/npm/v/shrimpit.svg?style=flat)](https://www.npmjs.com/package/shrimpit) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/yamafaktory/shrimpit.svg)](https://greenkeeper.io/)
+
 Shrimpit is a small CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.
 
 ## Usage
