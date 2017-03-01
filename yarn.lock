@@ -110,13 +110,9 @@ babel-types@^6.23.0:
     lodash "^4.2.0"
     to-fast-properties "^1.0.1"
 
-babylon@6.16.1:
+babylon@6.16.1, babylon@^6.15.0:
   version "6.16.1"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.16.1.tgz#30c5a22f481978a9e7f8cdfdf496b11d94b404d3"
-
-babylon@^6.15.0:
-  version "6.15.0"
-  resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.15.0.tgz#ba65cfa1a80e1759b0e89fb562e27dccae70348e"
 
 balanced-match@^0.4.1:
   version "0.4.2"
@@ -422,9 +418,9 @@ eslint-config-standard@6.2.1:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/eslint-config-standard/-/eslint-config-standard-6.2.1.tgz#d3a68aafc7191639e7ee441e7348739026354292"
 
-eslint-config-standard@7.0.0-beta.0:
-  version "7.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-standard/-/eslint-config-standard-7.0.0-beta.0.tgz#79f93e10f415f34f118d40a33b4842a5c32e2b74"
+eslint-config-standard@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-standard/-/eslint-config-standard-7.0.0.tgz#4f161bc65695e4bc61331c55b9eeaca458cd99c6"
 
 eslint-plugin-promise@~3.4.0:
   version "3.4.0"
@@ -1209,12 +1205,12 @@ standard@*:
     eslint-plugin-standard "~2.0.1"
     standard-engine "~5.2.0"
 
-standard@9.0.0-beta.0:
-  version "9.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/standard/-/standard-9.0.0-beta.0.tgz#cf5609d1cff08aa27c36eeba88115fe9d139771d"
+standard@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/standard/-/standard-9.0.0.tgz#58b2acad4dc33823a7477568033c973fc5b6a995"
   dependencies:
     eslint "~3.15.0"
-    eslint-config-standard "7.0.0-beta.0"
+    eslint-config-standard "7.0.0"
     eslint-config-standard-jsx "3.3.0"
     eslint-plugin-promise "~3.4.0"
     eslint-plugin-react "~6.9.0"
