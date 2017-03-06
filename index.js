@@ -34,6 +34,7 @@ class Shrimpit {
         'classProperties',
         'decorators',
         'doExpressions',
+        'dynamicImport',
         'exponentiationOperator',
         'exportExtensions',
         'flow',
