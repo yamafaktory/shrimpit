@@ -31,7 +31,7 @@
     "babylon": "6.17.2",
     "babel-traverse": "6.24.1",
     "chalk": "1.1.3",
-    "cheerio": "0.22.0",
+    "cheerio": "1.0.0-rc.2",
     "lodash.merge": "4.6.0"
   },
   "devDependencies": {
