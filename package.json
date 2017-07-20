@@ -28,7 +28,7 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "babylon": "6.17.2",
+    "babylon": "6.17.3",
     "babel-traverse": "6.24.1",
     "chalk": "2.0.1",
     "cheerio": "0.22.0",
