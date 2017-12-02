@@ -1,6 +1,6 @@
 {
   "name": "shrimpit",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "title": "shrimpit",
   "description": "A CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.",
   "keywords": [
@@ -28,8 +28,8 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "babylon": "6.18.0",
     "babel-traverse": "6.24.1",
+    "babylon": "6.18.0",
     "chalk": "2.3.0",
     "cheerio": "0.22.0",
     "lodash.merge": "4.6.0"
