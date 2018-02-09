@@ -1,0 +1,18 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "extends": ["standard", "prettier", "prettier/standard"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "allowImportExportEverywhere": true,
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "modules": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": ["import"]
+}

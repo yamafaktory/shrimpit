@@ -2,7 +2,8 @@
   "name": "shrimpit",
   "version": "0.16.1",
   "title": "shrimpit",
-  "description": "A CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.",
+  "description":
+    "A CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.",
   "keywords": [
     "babel",
     "cli",
@@ -28,28 +29,42 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "babel-traverse": "6.24.1",
+    "babel-traverse": "6.26.0",
     "babylon": "6.18.0",
     "chalk": "2.3.0",
     "cheerio": "0.22.0",
     "lodash.merge": "4.6.1"
   },
   "devDependencies": {
-    "snazzy": "6.0.0",
-    "standard": "10.0.1"
+    "babel-eslint": "8.2.1",
+    "eslint-config-prettier": "2.9.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-import": "2.8.0",
+    "eslint-plugin-node": "6.0.0",
+    "eslint-plugin-standard": "3.0.1",
+    "eslint": "4.17.0",
+    "husky": "0.14.3",
+    "lint-staged": "6.1.0",
+    "snazzy": "7.0.0",
+    "standard": "10.0.3"
   },
   "bin": {
     "shrimpit": "index.js"
   },
   "scripts": {
-    "std": "standard --verbose | snazzy",
-    "test": "node index.js --tree test",
-    "preversion": "git pull && npm up && npm run std --silent && npm test",
-    "postversion": "git push --tags origin HEAD"
+    "lint": "eslint --cache --ext .js .",
+    "prettier": "prettier --no-semi --single-quote --trailing-comma es5 --write",
+    "preversion": "git pull && yarn && yarn lint --quiet",
+    "postversion": "git push --tags origin HEAD",
+    "test": "node index.js test"
   },
-  "standard": {
-    "ignore": [
-      "test"
-    ]
+  "lint-staged": {
+    "*.{js}": ["yarn prettier", "yarn lint", "git add"]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "useTabs": false
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
@@ -14,7 +14,7 @@ const log = i => console.log(i, '\n')
 const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
 
 class Shrimpit {
-  constructor (argv) {
+  constructor(argv) {
     // Remove execPath and path from argv.
     const [, , ...src] = argv
 
@@ -23,7 +23,7 @@ class Shrimpit {
     this.isVueTemplate = /^\.vue$/
     this.modules = {
       exports: [],
-      imports: []
+      imports: [],
     }
     this.parseOpts = {
       allowImportExportEverywhere: true,
@@ -42,24 +42,27 @@ class Shrimpit {
         'functionBind',
         'jsx',
         'objectRestSpread',
-        'trailingFunctionCommas'
+        'trailingFunctionCommas',
       ],
-      sourceType: 'module'
+      sourceType: 'module',
     }
     this.src = this.cleanSrc(src)
   }
 
-  addDir (extPath) {
+  addDir(extPath) {
     this.updateFilesTree([...this.getDir(extPath), this.getBase(extPath)])
   }
 
-  addFile (extPath) {
-    if (!(this.allowedTypes.test(this.getExt(extPath)))) return
+  addFile(extPath) {
+    if (!this.allowedTypes.test(this.getExt(extPath))) return
 
-    this.updateFilesTree([...this.getDir(extPath), this.getBase(extPath)], this.walkAST(extPath))
+    this.updateFilesTree(
+      [...this.getDir(extPath), this.getBase(extPath)],
+      this.walkAST(extPath)
+    )
   }
 
-  cleanSrc (src) {
+  cleanSrc(src) {
     return src.filter(s => {
       const flagRegex = /^--(\w+)$/i
 
@@ -82,27 +85,32 @@ class Shrimpit {
     })
   }
 
-  dedupe (array) {
-    // Dedupe with a set.
-    return [...new Set(array)]
+  dedupe(array) {
+    return array.reduce((acc, item) => {
+      if (
+        acc.filter(element => this.deepStrictEqual(element, item)).length === 0
+      )
+        acc.push(item)
+      return acc
+    }, [])
   }
 
-  deExtensionize (filePath) {
-    const base = this.getBase(filePath, true)
-
-    return path.dirname([
-      ...this.getDir(filePath),
-      base === 'index' ? [] : base
-    ].join('/'))
+  deepStrictEqual(a, b) {
+    try {
+      assert.deepStrictEqual(a, b)
+    } catch (e) {
+      return false
+    }
+    return true
   }
 
-  error (e) {
+  error(e) {
     log(chalk.red(`! ${e} `))
 
     process.exit(1)
   }
 
-  exec () {
+  exec() {
     log(chalk.white.bgMagenta.bold(' Shrimpit! '))
 
     if (this.displayUnknownFlag) return this.renderUnknownFlag()
@@ -117,7 +125,7 @@ class Shrimpit {
     this.renderUnused()
   }
 
-  getAST (src, path) {
+  getAST(src, path) {
     try {
       return babylon.parse(src, this.parseOpts)
     } catch (e) {
@@ -125,19 +133,32 @@ class Shrimpit {
     }
   }
 
-  getBase (extPath, dropExt) {
+  getBase(extPath, dropExt) {
     return dropExt ? path.parse(extPath).name : path.parse(extPath).base
   }
 
-  getDir (extPath) {
+  getDir(extPath) {
     return path.parse(extPath).dir.split(path.sep)
   }
 
-  getExt (extPath) {
+  getExt(extPath) {
     return path.parse(extPath).ext
   }
 
-  isDir (target) {
+  getExtLess(extPath) {
+    const parsedPath = path.parse(extPath)
+    return `${parsedPath.dir}${path.sep}${parsedPath.name}`
+  }
+
+  getParent(filePath) {
+    const base = this.getBase(filePath, true)
+
+    return path.dirname(
+      [...this.getDir(filePath), base === 'index' ? [] : base].join(path.sep)
+    )
+  }
+
+  isDir(target) {
     try {
       return fs.statSync(target).isDirectory()
     } catch (e) {
@@ -145,7 +166,7 @@ class Shrimpit {
     }
   }
 
-  isFile (target) {
+  isFile(target) {
     try {
       return fs.statSync(target).isFile()
     } catch (e) {
@@ -153,13 +174,13 @@ class Shrimpit {
     }
   }
 
-  joinPaths (...paths) {
+  joinPaths(...paths) {
     return path.join(...paths)
   }
 
-  read (rootPath, target) {
+  read(rootPath, target) {
     const extPath = path.normalize(
-      `${rootPath !== null ? rootPath + '/' : ''}${target}`
+      `${rootPath !== null ? rootPath + path.sep : ''}${target}`
     )
 
     if (this.isDir(extPath)) {
@@ -175,138 +196,177 @@ class Shrimpit {
     }
   }
 
-  readFile (path) {
+  readFile(path) {
     try {
       const content = fs.readFileSync(path, { encoding: 'utf8' })
 
       return this.isVueTemplate.test(this.getExt(path))
-        ? cheerio.load(content)('script').text()
+        ? cheerio
+            .load(content)('script')
+            .text()
         : content
     } catch (e) {
       this.error(e)
     }
   }
 
-  renderHelp () {
-    log([
-      'Usage:',
-      '  shrimpit [<file | directory> ...]',
-      '',
-      'Options:',
-      ' --tree  Output the complete files tree',
-      '',
-      'Examples:',
-      '  shrimpit test/a/a2.js',
-      '  shrimpit test'
-    ].join('\n'))
+  renderHelp() {
+    log(
+      [
+        'Usage:',
+        '  shrimpit [<file | directory> ...]',
+        '',
+        'Options:',
+        ' --tree  Output the complete files tree',
+        '',
+        'Examples:',
+        '  shrimpit test/a/a2.js',
+        '  shrimpit test',
+      ].join('\n')
+    )
   }
 
-  renderTree () {
+  renderTree() {
     log(chalk.magenta.bgWhite(' > Files tree '))
 
     objectLog(this.filesTree)
   }
 
-  renderUnknownFlag () {
+  renderUnknownFlag() {
     this.error('Unknown flag provided, try --help.')
   }
 
-  renderUnused () {
+  renderUnused() {
     const { exports, imports } = this.modules
-    let unresolved = new Set(this.dedupe(exports))
-
-    this.dedupe(imports).forEach(i => unresolved.delete(i))
+    const unresolved = exports.reduce((acc, item) => {
+      if (
+        imports.filter(element => this.deepStrictEqual(element, item))
+          .length === 0
+      )
+        acc.push(item)
+      return acc
+    }, [])
 
     log(chalk.magenta.bgWhite(' > Unused exports '))
 
-    if (unresolved.size === 0) log(chalk.yellow('All Clear Ahead, Captain.'))
+    if (unresolved.length === 0) log(chalk.yellow('All Clear Ahead, Captain.'))
     else objectLog([...unresolved])
   }
 
-  updateFilesTree (arrayPath, modules = null) {
+  updateFilesTree(arrayPath, modules = null) {
     const arrayPathCleaned = arrayPath.filter(segment => segment !== '')
 
     this.filesTree = merge(
       this.filesTree,
-      JSON.parse([
-        '{',
-        arrayPathCleaned.map(segment => `"${segment}"`).join(':{'),
-        `:${JSON.stringify(modules)}`,
-        '}'.repeat(arrayPathCleaned.length)
-      ].join(''))
+      JSON.parse(
+        [
+          '{',
+          arrayPathCleaned.map(segment => `"${segment}"`).join(':{'),
+          `:${JSON.stringify(modules)}`,
+          '}'.repeat(arrayPathCleaned.length),
+        ].join('')
+      )
     )
   }
 
-  walkAST (extPath) {
-    const self = this
+  walkAST(extPath) {
     let exports = []
     let imports = []
+    const self = this
+    const pushTo = (type, name, location) =>
+      type === 'exports'
+        ? exports.push({ name, location: this.getExtLess(extPath) })
+        : imports.push({
+            name,
+            location: this.joinPaths(
+              this.getDir(extPath).join(path.sep),
+              location
+            ),
+          })
 
     const defaultExportVisitor = {
-      Expression (path) {
-        // Use path as default.
-        exports.push(self.deExtensionize(extPath))
-
+      Expression(path) {
+        if (
+          path.scope.parent &&
+          path.scope.parent.path.node.type === 'ClassDeclaration'
+        ) {
+          // We are hitting a class, use it's name.
+          pushTo('exports', path.scope.parent.path.node.id.name)
+        } else {
+          // Specify unamed default export.
+          pushTo('exports', 'default (unamed)')
+        }
         // Stop traversal as an expression was found.
         path.stop()
       },
 
-      Function (path) {
+      Function(path) {
         path.traverse(exportVisitor, true)
-      }
+      },
     }
 
     const exportVisitor = {
-      Identifier (path) {
-        exports.push(path.node.name)
-
+      Identifier(path) {
+        // Do not store the identifiers nested into a class.
+        if (
+          !(
+            path.scope.parent &&
+            path.scope.parent.path.node.type === 'ClassDeclaration'
+          )
+        ) {
+          pushTo('exports', path.node.name)
+        }
         // Stop traversal to avoid collecting unwanted identifiers.
         path.stop()
       },
 
-      Statement (path, expectNamedFunction) {
-        if (expectNamedFunction) exports.push(self.deExtensionize(extPath))
-      }
+      Statement(path, expectNamedFunction) {
+        if (expectNamedFunction) pushTo('exports', self.getParent(extPath))
+      },
     }
 
     traverse(this.getAST(this.readFile(extPath), extPath), {
-      ExportAllDeclaration (path) {
+      ExportAllDeclaration(path) {
         path.traverse(exportVisitor)
       },
 
-      ExportDefaultDeclaration (path) {
+      ExportDefaultDeclaration(path) {
         path.traverse(defaultExportVisitor)
       },
 
-      ExportDefaultSpecifier (path) {
+      ExportDefaultSpecifier(path) {
         path.traverse(exportVisitor)
       },
 
-      ExportNamedDeclaration (path) {
+      ExportNamedDeclaration(path) {
         path.traverse(exportVisitor)
       },
 
-      ExportNamespaceSpecifier (path) {
+      ExportNamespaceSpecifier(path) {
         path.traverse(exportVisitor)
       },
 
-      ExportSpecifier (path) {
+      ExportSpecifier(path) {
         path.traverse(exportVisitor)
       },
 
-      ImportDefaultSpecifier (path) {
-        imports.push(
-          self.deExtensionize(self.joinPaths(extPath, '../', path.parent.source.value))
+      ImportDefaultSpecifier(path) {
+        pushTo(
+          'imports',
+          self.getParent(
+            self.joinPaths(extPath, '../', path.parent.source.value)
+          ),
+          path.parent.source.value
         )
       },
 
-      ImportNamespaceSpecifier (path) {
-        imports.push(path.node.local.name)
+      ImportNamespaceSpecifier(path) {
+        pushTo('imports', path.node.local.name, path.parent.source.value)
       },
 
-      ImportSpecifier (path) {
-        imports.push(path.node.local.name)
-      }
+      ImportSpecifier(path) {
+        pushTo('imports', path.node.local.name, path.parent.source.value)
+      },
     })
 
     exports = this.dedupe(exports)
