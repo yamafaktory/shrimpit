@@ -145,11 +145,6 @@ class Shrimpit {
     return path.parse(extPath).ext
   }
 
-  getExtLess(extPath) {
-    const parsedPath = path.parse(extPath)
-    return `${parsedPath.dir}${path.sep}${parsedPath.name}`
-  }
-
   getParent(filePath) {
     const base = this.getBase(filePath, true)
 
@@ -275,12 +270,12 @@ class Shrimpit {
     const self = this
     const pushTo = (type, name, location) =>
       type === 'exports'
-        ? exports.push({ name, location: this.getExtLess(extPath) })
+        ? exports.push({ name, location: extPath })
         : imports.push({
             name,
             location: this.joinPaths(
               this.getDir(extPath).join(path.sep),
-              location
+              location + this.getExt(extPath)
             ),
           })
 

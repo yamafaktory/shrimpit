@@ -1,3 +1,5 @@
+import { Cat } from '../c/c'
+
 export function a() {}
 
 export async function b() {}
@@ -7,3 +9,6 @@ export default {
   propB: _ => _,
   propC: false,
 }
+
+const cat = new Cat()
+cat.run()
