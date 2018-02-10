@@ -44,6 +44,7 @@
     "eslint-plugin-standard": "3.0.1",
     "eslint": "4.17.0",
     "husky": "0.14.3",
+    "jest": "22.2.2",
     "lint-staged": "6.1.0",
     "snazzy": "7.0.0",
     "standard": "10.0.3"
@@ -56,7 +57,7 @@
     "prettier": "prettier --no-semi --single-quote --trailing-comma es5 --write",
     "preversion": "git pull && yarn && yarn lint --quiet",
     "postversion": "git push --tags origin HEAD",
-    "test": "node index.js test"
+    "test": "jest"
   },
   "lint-staged": {
     "*.{js}": ["yarn prettier", "yarn lint", "git add"]

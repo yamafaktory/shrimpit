@@ -5,6 +5,10 @@
     "es6": true
   },
   "extends": ["standard", "prettier", "prettier/standard"],
+  "globals": {
+    "expect": true,
+    "it": true
+  },
   "parser": "babel-eslint",
   "parserOptions": {
     "allowImportExportEverywhere": true,
