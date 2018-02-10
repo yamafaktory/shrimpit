@@ -18,26 +18,47 @@ Adding the `--tree` flag will output the complete files tree with all the import
 shrimpit --tree path/to/your/files
 ```
 
-Please note that default unnamed exports are rendered as paths:
+Please note that default unnamed exports are rendered as `default (unamed)`:
 
 ``` shell
 shrimpit test --tree
- Shrimpit!
+  Shrimpit!
 
  > Files tree
 
 { test:
    { a:
-      { 'a1.js': { exports: [ 'a11', 'a12' ], imports: [ 'test/a' ] },
-        'a2.js': { exports: [ 'a2' ], imports: [ 'test' ] },
-        'a4.js': { exports: [ 'a4', 'test/a' ], imports: [ 'a11', 'a12' ] } },
+      { 'a.js':
+         { exports:
+            [ { name: 'a', location: 'test/a/a.js' },
+              { name: 'c', location: 'test/a/a.js' },
+              { name: 'd', location: 'test/a/a.js' } ],
+           imports: [ { name: 'test', location: 'test/b/b.js' } ] } },
      b:
-      { 'b1.js': { exports: [ 'b1', 'test/b' ], imports: [] },
-        'b2.js': { exports: [ 'test/b' ], imports: [] } } } }
+      { 'b.js':
+         { exports:
+            [ { name: 'a', location: 'test/b/b.js' },
+              { name: 'b', location: 'test/b/b.js' },
+              { name: 'default (unamed)', location: 'test/b/b.js' } ],
+           imports: [ { name: 'Cat', location: 'test/c/c.js' } ] } },
+     c:
+      { 'c.js':
+         { exports:
+            [ { name: 'Cat', location: 'test/c/c.js' },
+              { name: 'User', location: 'test/c/c.js' },
+              { name: 'default (unamed)', location: 'test/c/c.js' } ],
+           imports:
+            [ { name: 'a', location: 'test/a/a.js' },
+              { name: 'c', location: 'test/a/a.js' },
+              { name: 'b', location: 'test/b/b.js' } ] } } } }
 
  > Unused exports
 
-[ 'a2', 'a4', 'b1', 'test/b' ]
+[ { name: 'd', location: 'test/a/a.js' },
+  { name: 'a', location: 'test/b/b.js' },
+  { name: 'default (unamed)', location: 'test/b/b.js' },
+  { name: 'User', location: 'test/c/c.js' },
+  { name: 'default (unamed)', location: 'test/c/c.js' } ]
 ```
 
 ## Flow & Vue
