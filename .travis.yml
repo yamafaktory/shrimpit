@@ -4,7 +4,7 @@ node_js:
   - 6
 
 script:
-  - npm run std
-  - npm test
+  - yarn lint
+  - yarn test
 
 sudo: false
