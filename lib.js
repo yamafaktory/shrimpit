@@ -93,8 +93,9 @@ module.exports = class Shrimpit {
     return array.reduce((acc, item) => {
       if (
         acc.filter(element => this.deepStrictEqual(element, item)).length === 0
-      )
+      ) {
         acc.push(item)
+      }
       return acc
     }, [])
   }
@@ -254,10 +255,22 @@ module.exports = class Shrimpit {
     const { exports, imports } = this.modules
     const unresolved = exports.reduce((acc, item) => {
       if (
-        imports.filter(element => this.deepStrictEqual(element, item))
-          .length === 0
-      )
+        imports.filter(
+          element =>
+            element.unamedDefault
+              ? // Skip the name in the comparison as a default unamed export
+                // can be imported with any name.
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
+                this.deepStrictEqual(
+                  { location: element.location, unamedDefault: true },
+                  { location: item.location, unamedDefault: item.unamedDefault }
+                )
+              : // Compare the raw element & item.
+                this.deepStrictEqual(element, item)
+        ).length === 0
+      ) {
         acc.push(item)
+      }
       return acc
     }, [])
 
@@ -292,15 +305,27 @@ module.exports = class Shrimpit {
     let exports = []
     let imports = []
     const self = this
-    const pushTo = (type, name, location) =>
+    const pushTo = ({
+      location,
+      name,
+      references = {},
+      type,
+      unamedDefault = false,
+    }) =>
       type === 'exports'
-        ? exports.push({ name, location: extPath })
-        : imports.push({
+        ? exports.push({
+            location: extPath,
             name,
+            references,
+            unamedDefault,
+          })
+        : imports.push({
             location: this.joinPaths(
               this.getDir(extPath).join(path.sep),
               location + this.getExt(extPath)
             ),
+            name,
+            unamedDefault,
           })
 
     const defaultExportVisitor = {
@@ -309,11 +334,21 @@ module.exports = class Shrimpit {
           path.scope.parent &&
           path.scope.parent.path.node.type === 'ClassDeclaration'
         ) {
-          // We are hitting a class, use it's name.
-          pushTo('exports', path.scope.parent.path.node.id.name)
+          // We are hitting a class, use its name.
+          pushTo({
+            type: 'exports',
+            name: path.scope.parent.path.node.id.name,
+            unamedDefault: true,
+          })
         } else {
           // Specify unamed default export.
-          pushTo('exports', 'default (unamed)')
+          pushTo({
+            // location: null,
+            name: 'default (unamed)',
+            references: path.scope.parent && path.scope.parent.references,
+            type: 'exports',
+            unamedDefault: true,
+          })
         }
         // Stop traversal as an expression was found.
         path.stop()
@@ -333,14 +368,20 @@ module.exports = class Shrimpit {
             path.scope.parent.path.node.type === 'ClassDeclaration'
           )
         ) {
-          pushTo('exports', path.node.name)
+          pushTo({
+            name: path.node.name,
+            type: 'exports',
+            unamedDefault:
+              path.parentPath.parent.type === 'ExportDefaultDeclaration',
+          })
         }
         // Stop traversal to avoid collecting unwanted identifiers.
         path.stop()
       },
 
       Statement(path, expectNamedFunction) {
-        if (expectNamedFunction) pushTo('exports', self.getParent(extPath))
+        if (expectNamedFunction)
+          pushTo({ name: self.getParent(extPath), type: 'exports' })
       },
     }
 
@@ -370,30 +411,58 @@ module.exports = class Shrimpit {
       },
 
       ImportDefaultSpecifier(path) {
-        pushTo(
-          'imports',
-          self.getParent(
-            self.joinPaths(extPath, '../', path.parent.source.value)
-          ),
-          path.parent.source.value
-        )
+        pushTo({
+          location: path.parent.source.value,
+          name: path.node.local.name,
+          type: 'imports',
+        })
       },
 
       ImportNamespaceSpecifier(path) {
-        pushTo('imports', path.node.local.name, path.parent.source.value)
+        pushTo({
+          location: path.parent.source.value,
+          name: path.node.local.name,
+          type: 'imports',
+          unamedDefault: true,
+        })
       },
 
       ImportSpecifier(path) {
-        pushTo('imports', path.node.local.name, path.parent.source.value)
+        pushTo({
+          location: path.parent.source.value,
+          name: path.node.local.name,
+          type: 'imports',
+        })
       },
     })
 
-    exports = this.dedupe(exports)
+    exports = this.dedupe(
+      exports.reduce((acc, item) => {
+        // If we found an unamed default export an one of its references is
+        // another export's name skip it as it corresponds to the same export!
+        if (
+          !(
+            item.unamedDefault === true &&
+            exports.filter(
+              element =>
+                Object.keys(item.references).indexOf(element.name) !== -1
+            ).length > 0
+          )
+        ) {
+          acc.push(item)
+        }
+        return acc
+      }, [])
+    ).map(({ location, name, unamedDefault }) => ({
+      location,
+      name,
+      unamedDefault,
+    }))
     this.modules.exports.push(...exports)
 
     imports = this.dedupe(imports)
     this.modules.imports.push(...imports)
 
-    return { exports, imports }
+    return { imports, exports }
   }
 }
