@@ -1,5 +1,7 @@
 import { Cat } from '../c/c'
 
+import * as test from '../a/a'
+
 export function a() {}
 
 export async function b() {}
@@ -11,4 +13,7 @@ export default {
 }
 
 const cat = new Cat()
+
 cat.run()
+
+test()
