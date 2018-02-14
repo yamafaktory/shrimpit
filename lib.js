@@ -257,13 +257,13 @@ module.exports = class Shrimpit {
       if (
         imports.filter(
           element =>
-            element.unamedDefault
-              ? // Skip the name in the comparison as a default unamed export
+            element.unnamedDefault
+              ? // Skip the name in the comparison as a default unnamed export
                 // can be imported with any name.
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
                 this.deepStrictEqual(
-                  { location: element.location, unamedDefault: true },
-                  { location: item.location, unamedDefault: item.unamedDefault }
+                  { location: element.location, unnamedDefault: true },
+                  { location: item.location, unnamedDefault: item.unnamedDefault }
                 )
               : // Compare the raw element & item.
                 this.deepStrictEqual(element, item)
@@ -310,14 +310,14 @@ module.exports = class Shrimpit {
       name,
       references = {},
       type,
-      unamedDefault = false,
+      unnamedDefault = false,
     }) =>
       type === 'exports'
         ? exports.push({
             location: extPath,
             name,
             references,
-            unamedDefault,
+            unnamedDefault,
           })
         : imports.push({
             location: this.joinPaths(
@@ -325,7 +325,7 @@ module.exports = class Shrimpit {
               location + this.getExt(extPath)
             ),
             name,
-            unamedDefault,
+            unnamedDefault,
           })
 
     const defaultExportVisitor = {
@@ -338,16 +338,16 @@ module.exports = class Shrimpit {
           pushTo({
             type: 'exports',
             name: path.scope.parent.path.node.id.name,
-            unamedDefault: true,
+            unnamedDefault: true,
           })
         } else {
-          // Specify unamed default export.
+          // Specify unnamed default export.
           pushTo({
             // location: null,
-            name: 'default (unamed)',
+            name: 'default (unnamed)',
             references: path.scope.parent && path.scope.parent.references,
             type: 'exports',
-            unamedDefault: true,
+            unnamedDefault: true,
           })
         }
         // Stop traversal as an expression was found.
@@ -371,7 +371,7 @@ module.exports = class Shrimpit {
           pushTo({
             name: path.node.name,
             type: 'exports',
-            unamedDefault:
+            unnamedDefault:
               path.parentPath.parent.type === 'ExportDefaultDeclaration',
           })
         }
@@ -423,7 +423,7 @@ module.exports = class Shrimpit {
           location: path.parent.source.value,
           name: path.node.local.name,
           type: 'imports',
-          unamedDefault: true,
+          unnamedDefault: true,
         })
       },
 
@@ -438,11 +438,11 @@ module.exports = class Shrimpit {
 
     exports = this.dedupe(
       exports.reduce((acc, item) => {
-        // If we found an unamed default export an one of its references is
+        // If we found an unnamed default export an one of its references is
         // another export's name skip it as it corresponds to the same export!
         if (
           !(
-            item.unamedDefault === true &&
+            item.unnamedDefault === true &&
             exports.filter(
               element =>
                 Object.keys(item.references).indexOf(element.name) !== -1
@@ -453,10 +453,10 @@ module.exports = class Shrimpit {
         }
         return acc
       }, [])
-    ).map(({ location, name, unamedDefault }) => ({
+    ).map(({ location, name, unnamedDefault }) => ({
       location,
       name,
-      unamedDefault,
+      unnamedDefault,
     }))
     this.modules.exports.push(...exports)
 

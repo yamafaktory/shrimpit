@@ -18,7 +18,7 @@ Adding the `--tree` flag will output the complete files tree with all the import
 shrimpit --tree path/to/your/files
 ```
 
-Please note that default unnamed exports are rendered as `default (unamed)`:
+Please note that default unnamed exports are rendered as `default (unnamed)`:
 
 ``` shell
 shrimpit test --tree
@@ -29,36 +29,37 @@ shrimpit test --tree
 { test:
    { a:
       { 'a.js':
-         { exports:
-            [ { name: 'a', location: 'test/a/a.js' },
-              { name: 'c', location: 'test/a/a.js' },
-              { name: 'd', location: 'test/a/a.js' } ],
-           imports: [ { name: 'test', location: 'test/b/b.js' } ] } },
+         { imports:
+            [ { location: 'test/b/b.js', name: 'test', unnamedDefault: true } ],
+           exports:
+            [ { location: 'test/a/a.js', name: 'a', unnamedDefault: false },
+              { location: 'test/a/a.js', name: 'c', unnamedDefault: false },
+              { location: 'test/a/a.js', name: 'd', unnamedDefault: true } ] } },
      b:
       { 'b.js':
-         { exports:
-            [ { name: 'a', location: 'test/b/b.js' },
-              { name: 'b', location: 'test/b/b.js' },
-              { name: 'default (unamed)', location: 'test/b/b.js' } ],
-           imports: [ { name: 'Cat', location: 'test/c/c.js' } ] } },
+         { imports:
+            [ { location: 'test/c/c.js', name: 'Cat', unnamedDefault: false },
+              { location: 'test/a/a.js', name: 'test', unnamedDefault: true } ],
+           exports:
+            [ { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
+              { location: 'test/b/b.js', name: 'b', unnamedDefault: false },
+              { location: 'test/b/b.js',
+                name: 'default (unnamed)',
+                unnamedDefault: true } ] } },
      c:
       { 'c.js':
-         { exports:
-            [ { name: 'Cat', location: 'test/c/c.js' },
-              { name: 'User', location: 'test/c/c.js' },
-              { name: 'default (unamed)', location: 'test/c/c.js' } ],
-           imports:
-            [ { name: 'a', location: 'test/a/a.js' },
-              { name: 'c', location: 'test/a/a.js' },
-              { name: 'b', location: 'test/b/b.js' } ] } } } }
+         { imports:
+            [ { location: 'test/a/a.js', name: 'a', unnamedDefault: false },
+              { location: 'test/a/a.js', name: 'c', unnamedDefault: false },
+              { location: 'test/b/b.js', name: 'b', unnamedDefault: false } ],
+           exports:
+            [ { location: 'test/c/c.js', name: 'Cat', unnamedDefault: false },
+              { location: 'test/c/c.js', name: 'User', unnamedDefault: true } ] } } } }
 
  > Unused exports
 
-[ { name: 'd', location: 'test/a/a.js' },
-  { name: 'a', location: 'test/b/b.js' },
-  { name: 'default (unamed)', location: 'test/b/b.js' },
-  { name: 'User', location: 'test/c/c.js' },
-  { name: 'default (unamed)', location: 'test/c/c.js' } ]
+[ { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
+  { location: 'test/c/c.js', name: 'User', unnamedDefault: true } ]
 ```
 
 ## Flow & Vue
