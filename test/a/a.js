@@ -1,4 +1,4 @@
-import * as test from '../b/b'
+import test from '../b/b'
 
 export function a() {}
 

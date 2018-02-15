@@ -415,6 +415,7 @@ module.exports = class Shrimpit {
           location: path.parent.source.value,
           name: path.node.local.name,
           type: 'imports',
+          unnamedDefault: true,
         })
       },
 
