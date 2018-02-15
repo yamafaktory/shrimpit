@@ -263,7 +263,10 @@ module.exports = class Shrimpit {
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
                 this.deepStrictEqual(
                   { location: element.location, unnamedDefault: true },
-                  { location: item.location, unnamedDefault: item.unnamedDefault }
+                  {
+                    location: item.location,
+                    unnamedDefault: item.unnamedDefault,
+                  }
                 )
               : // Compare the raw element & item.
                 this.deepStrictEqual(element, item)
@@ -380,8 +383,19 @@ module.exports = class Shrimpit {
       },
 
       Statement(path, expectNamedFunction) {
-        if (expectNamedFunction)
+        if (
+          expectNamedFunction &&
+          // Do not store the identifiers nested into a class exported as
+          // default.
+          !(
+            path.scope.parent.path.container.type ===
+              'ExportDefaultDeclaration' &&
+            path.scope.parent.path.container.declaration.type ===
+              'ClassDeclaration'
+          )
+        ) {
           pushTo({ name: self.getParent(extPath), type: 'exports' })
+        }
       },
     }
 

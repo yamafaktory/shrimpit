@@ -12,6 +12,7 @@ export default class User extends b {
   walk() {
     console.log("I'm walking")
   }
+  test = () => {}
 }
 
 a()
