@@ -383,15 +383,23 @@ module.exports = class Shrimpit {
       },
 
       Statement(path, expectNamedFunction) {
+        const isEnclosedIn = (type, { parentPath }) => {
+          if (parentPath) {
+            if (parentPath.type === type) {
+              return true
+            }
+            return isEnclosedIn(type, parentPath)
+          } else {
+            return false
+          }
+        }
         if (
           expectNamedFunction &&
           // Do not store the identifiers nested into a class exported as
           // default.
           !(
-            path.scope.parent.path.container.type ===
-              'ExportDefaultDeclaration' &&
-            path.scope.parent.path.container.declaration.type ===
-              'ClassDeclaration'
+            isEnclosedIn('ClassDeclaration', path) &&
+            isEnclosedIn('ExportDefaultDeclaration', path)
           )
         ) {
           pushTo({ name: self.getParent(extPath), type: 'exports' })
