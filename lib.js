@@ -308,6 +308,16 @@ module.exports = class Shrimpit {
     let exports = []
     let imports = []
     const self = this
+    const isEnclosedIn = (type, { parentPath }) => {
+      if (parentPath) {
+        if (parentPath.type === type) {
+          return true
+        }
+        return isEnclosedIn(type, parentPath)
+      } else {
+        return false
+      }
+    }
     const pushTo = ({
       location,
       name,
@@ -333,10 +343,7 @@ module.exports = class Shrimpit {
 
     const defaultExportVisitor = {
       Expression(path) {
-        if (
-          path.scope.parent &&
-          path.scope.parent.path.node.type === 'ClassDeclaration'
-        ) {
+        if (isEnclosedIn('ClassDeclaration', path.parentPath)) {
           // We are hitting a class, use its name.
           pushTo({
             type: 'exports',
@@ -365,12 +372,7 @@ module.exports = class Shrimpit {
     const exportVisitor = {
       Identifier(path) {
         // Do not store the identifiers nested into a class.
-        if (
-          !(
-            path.scope.parent &&
-            path.scope.parent.path.node.type === 'ClassDeclaration'
-          )
-        ) {
+        if (!isEnclosedIn('ClassDeclaration', path.parentPath)) {
           pushTo({
             name: path.node.name,
             type: 'exports',
@@ -383,16 +385,6 @@ module.exports = class Shrimpit {
       },
 
       Statement(path, expectNamedFunction) {
-        const isEnclosedIn = (type, { parentPath }) => {
-          if (parentPath) {
-            if (parentPath.type === type) {
-              return true
-            }
-            return isEnclosedIn(type, parentPath)
-          } else {
-            return false
-          }
-        }
         if (
           expectNamedFunction &&
           // Do not store the identifiers nested into a class exported as

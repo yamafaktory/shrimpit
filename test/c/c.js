@@ -8,6 +8,9 @@ export class Cat extends b {
   }
 }
 
+const GLOBAL_OPTIONS = {}
+const Global = {}
+
 export default class User extends b {
   walk() {
     console.log("I'm walking")
@@ -15,6 +18,10 @@ export default class User extends b {
   test = () => {
     const useless = true
     if (useless) {
+      Global.method(this.objProperty, this.objProperty2, {
+        ...GLOBAL_OPTIONS,
+        someProperty: true
+      });
     }
   }
 }
