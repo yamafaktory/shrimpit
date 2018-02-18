@@ -12,6 +12,7 @@ const GLOBAL_OPTIONS = {}
 const Global = {}
 
 export default class User extends b {
+  static a = {}
   walk() {
     console.log("I'm walking")
   }
@@ -20,8 +21,8 @@ export default class User extends b {
     if (useless) {
       Global.method(this.objProperty, this.objProperty2, {
         ...GLOBAL_OPTIONS,
-        someProperty: true
-      });
+        someProperty: true,
+      })
     }
   }
 }

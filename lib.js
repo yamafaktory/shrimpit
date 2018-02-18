@@ -343,8 +343,14 @@ module.exports = class Shrimpit {
 
     const defaultExportVisitor = {
       Expression(path) {
-        if (isEnclosedIn('ClassDeclaration', path.parentPath)) {
-          // We are hitting a class, use its name.
+        if (
+          path.scope.parent &&
+          path.scope.parent.path &&
+          path.scope.parent.path.node &&
+          path.scope.parent.path.node.id &&
+          isEnclosedIn('ClassDeclaration', path.parentPath)
+        ) {
+          // The node is nested into a class.
           pushTo({
             type: 'exports',
             name: path.scope.parent.path.node.id.name,
@@ -353,7 +359,6 @@ module.exports = class Shrimpit {
         } else {
           // Specify unnamed default export.
           pushTo({
-            // location: null,
             name: 'default (unnamed)',
             references: path.scope.parent && path.scope.parent.references,
             type: 'exports',
