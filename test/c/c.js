@@ -1,4 +1,4 @@
-import { a, c } from '../a/a'
+import { a as alpha, c } from '../a/a'
 
 import { b } from '../b/b'
 
@@ -27,7 +27,7 @@ export default class User extends b {
   }
 }
 
-a()
+alpha()
 
 b()
 

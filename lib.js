@@ -450,7 +450,7 @@ module.exports = class Shrimpit {
       ImportSpecifier(path) {
         pushTo({
           location: path.parent.source.value,
-          name: path.node.local.name,
+          name: path.node.imported.name,
           type: 'imports',
         })
       },
