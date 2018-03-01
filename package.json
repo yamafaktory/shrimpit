@@ -45,7 +45,7 @@
     "husky": "0.14.3",
     "jest": "22.2.2",
     "lint-staged": "6.1.1",
-    "snazzy": "7.0.0",
+    "snazzy": "7.1.1",
     "standard": "10.0.3"
   },
   "bin": {
