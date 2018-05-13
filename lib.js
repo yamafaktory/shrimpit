@@ -308,16 +308,8 @@ module.exports = class Shrimpit {
     let exports = []
     let imports = []
     const self = this
-    const isEnclosedIn = (type, { parentPath }) => {
-      if (parentPath) {
-        if (parentPath.type === type) {
-          return true
-        }
-        return isEnclosedIn(type, parentPath)
-      } else {
-        return false
-      }
-    }
+    const isEnclosedIn = (type, { parentPath }) =>
+      parentPath && (parentPath.type === type || isEnclosedIn(type, parentPath))
     const pushTo = ({
       location,
       name,
@@ -348,13 +340,14 @@ module.exports = class Shrimpit {
           path.scope.parent.path &&
           path.scope.parent.path.node &&
           path.scope.parent.path.node.id &&
-          isEnclosedIn('ClassDeclaration', path.parentPath)
+          (isEnclosedIn('ClassDeclaration', path.parentPath) ||
+            isEnclosedIn('FunctionDeclaration', path.parentPath) ||
+            isEnclosedIn('VariableDeclaration', path.parentPath))
         ) {
-          // The node is nested into a class.
+          // Classes, functions and variables as exports are named in this.
           pushTo({
-            type: 'exports',
             name: path.scope.parent.path.node.id.name,
-            unnamedDefault: true,
+            type: 'exports',
           })
         } else {
           // Specify unnamed default export.
@@ -376,13 +369,16 @@ module.exports = class Shrimpit {
 
     const exportVisitor = {
       Identifier(path) {
-        // Do not store the identifiers nested into a class.
-        if (!isEnclosedIn('ClassDeclaration', path.parentPath)) {
+        if (
+          // Do not store the identifiers nested into a class.
+          !isEnclosedIn('ClassDeclaration', path.parentPath) &&
+          // Skip default exports which are traversed by the expression walker
+          // of the defaultExportVisitor.
+          !isEnclosedIn('ExportDefaultDeclaration', path.parentPath)
+        ) {
           pushTo({
             name: path.node.name,
             type: 'exports',
-            unnamedDefault:
-              path.parentPath.parent.type === 'ExportDefaultDeclaration',
           })
         }
         // Stop traversal to avoid collecting unwanted identifiers.
@@ -399,7 +395,16 @@ module.exports = class Shrimpit {
             isEnclosedIn('ExportDefaultDeclaration', path)
           )
         ) {
-          pushTo({ name: self.getParent(extPath), type: 'exports' })
+          pushTo({
+            name: self.getParent(extPath),
+            type: 'exports',
+            unnamedDefault:
+              // Special case for unnamed functions exported as default.
+              path.parentPath.parent.declaration &&
+              path.parentPath.parent.declaration.type ===
+                'FunctionDeclaration' &&
+              !path.parentPath.parent.declaration.id,
+          })
         }
       },
     }

@@ -4,11 +4,23 @@
 
 Shrimpit is a small CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.
 
-## Usage
+## Install
+
+### npm
 
 ```shell
 npm i -g shrimpit
+```
 
+### yarn
+
+```shell
+yarn global add shrimpit
+```
+
+## Usage
+
+```shell
 shrimpit path/to/your/files /another/path
 ```
 
@@ -20,9 +32,9 @@ shrimpit --tree path/to/your/files
 
 Please note that default unnamed exports are rendered as `default (unnamed)`:
 
-``` shell
+```shell
 shrimpit test --tree
-  Shrimpit!
+ Shrimpit!
 
  > Files tree
 
@@ -30,16 +42,21 @@ shrimpit test --tree
    { a:
       { 'a.js':
          { imports:
-            [ { location: 'test/b/b.js', name: 'test', unnamedDefault: true } ],
+            [ { location: 'test/b/b.js', name: 'test', unnamedDefault: true },
+              { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
+              { location: 'test/c/c.js', name: 'User', unnamedDefault: false } ],
            exports:
             [ { location: 'test/a/a.js', name: 'a', unnamedDefault: false },
               { location: 'test/a/a.js', name: 'c', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'd', unnamedDefault: true } ] } },
+              { location: 'test/a/a.js', name: 'd', unnamedDefault: false } ] } },
      b:
       { 'b.js':
          { imports:
             [ { location: 'test/c/c.js', name: 'Cat', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'test', unnamedDefault: true } ],
+              { location: 'test/a/a.js', name: 'test', unnamedDefault: true },
+              { location: 'test/d/d.js',
+                name: 'unamedFunction',
+                unnamedDefault: true } ],
            exports:
             [ { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
               { location: 'test/b/b.js', name: 'b', unnamedDefault: false },
@@ -51,15 +68,20 @@ shrimpit test --tree
          { imports:
             [ { location: 'test/a/a.js', name: 'a', unnamedDefault: false },
               { location: 'test/a/a.js', name: 'c', unnamedDefault: false },
+              { location: 'test/a/a.js', name: 'd', unnamedDefault: false },
               { location: 'test/b/b.js', name: 'b', unnamedDefault: false } ],
            exports:
             [ { location: 'test/c/c.js', name: 'Cat', unnamedDefault: false },
-              { location: 'test/c/c.js', name: 'User', unnamedDefault: true } ] } } } }
+              { location: 'test/c/c.js', name: 'User', unnamedDefault: false } ] } },
+     d:
+      { 'd.js':
+         { imports: [],
+           exports:
+            [ { location: 'test/d/d.js', name: 'test/d', unnamedDefault: true } ] } } } }
 
  > Unused exports
 
-[ { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
-  { location: 'test/c/c.js', name: 'User', unnamedDefault: true } ]
+All Clear Ahead, Captain.
 ```
 
 ## Flow & Vue
