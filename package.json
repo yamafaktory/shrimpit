@@ -38,7 +38,7 @@
     "lodash.merge": "4.6.1"
   },
   "devDependencies": {
-    "babel-eslint": "8.2.3",
+    "babel-eslint": "8.2.4",
     "eslint": "4.19.1",
     "eslint-config-prettier": "2.9.0",
     "eslint-config-standard": "11.0.0",
