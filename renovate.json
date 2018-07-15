@@ -1,0 +1,10 @@
+{
+    "automerge": false,
+    "automergeType": "branch-push",
+    "commitMessagePrefix": "🐼 - ",
+    "extends": ["config:base"],
+    "minor": { "automerge": true },
+    "patch": { "automerge": true },
+    "rebaseStalePrs": true,
+    "separatePatchReleases": false
+  }
