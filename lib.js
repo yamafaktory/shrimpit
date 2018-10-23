@@ -4,11 +4,11 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 
-const babylon = require('babylon')
 const chalk = require('chalk')
 const cheerio = require('cheerio')
-const merge = require('lodash.merge')
-const traverse = require('babel-traverse').default
+const merge = require('lodash/merge')
+const parser = require('@babel/parser')
+const traverse = require('@babel/traverse').default
 
 const log = i => console.log(i, '\n')
 const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
@@ -32,7 +32,7 @@ module.exports = class Shrimpit {
         'asyncGenerators',
         'classConstructorCall',
         'classProperties',
-        'decorators',
+        'decorators-legacy',
         'doExpressions',
         'dynamicImport',
         'exponentiationOperator',
@@ -58,7 +58,7 @@ module.exports = class Shrimpit {
 
     this.updateFilesTree(
       [...this.getDir(extPath), this.getBase(extPath)],
-      this.walkAST(extPath)
+      this.walkAST(extPath),
     )
   }
 
@@ -135,7 +135,7 @@ module.exports = class Shrimpit {
 
   getAST(src, path) {
     try {
-      return babylon.parse(src, this.parseOpts)
+      return parser.parse(src, this.parseOpts)
     } catch (e) {
       this.error(`${e} in ${path}`)
     }
@@ -157,7 +157,7 @@ module.exports = class Shrimpit {
     const base = this.getBase(filePath, true)
 
     return path.dirname(
-      [...this.getDir(filePath), base === 'index' ? [] : base].join(path.sep)
+      [...this.getDir(filePath), base === 'index' ? [] : base].join(path.sep),
     )
   }
 
@@ -183,7 +183,7 @@ module.exports = class Shrimpit {
 
   read(rootPath, target) {
     const extPath = path.normalize(
-      `${rootPath !== null ? rootPath + path.sep : ''}${target}`
+      `${rootPath !== null ? rootPath + path.sep : ''}${target}`,
     )
 
     if (this.isDir(extPath)) {
@@ -226,7 +226,7 @@ module.exports = class Shrimpit {
         'Examples:',
         '  shrimpit test/a/a.js',
         '  shrimpit test',
-      ].join('\n')
+      ].join('\n'),
     )
   }
 
@@ -266,10 +266,10 @@ module.exports = class Shrimpit {
                   {
                     location: item.location,
                     unnamedDefault: item.unnamedDefault,
-                  }
+                  },
                 )
               : // Compare the raw element & item.
-                this.deepStrictEqual(element, item)
+                this.deepStrictEqual(element, item),
         ).length === 0
       ) {
         acc.push(item)
@@ -299,8 +299,8 @@ module.exports = class Shrimpit {
           arrayPathCleaned.map(segment => `"${segment}"`).join(':{'),
           `:${JSON.stringify(modules)}`,
           '}'.repeat(arrayPathCleaned.length),
-        ].join('')
-      )
+        ].join(''),
+      ),
     )
   }
 
@@ -327,7 +327,7 @@ module.exports = class Shrimpit {
         : imports.push({
             location: this.joinPaths(
               this.getDir(extPath).join(path.sep),
-              location + this.getExt(extPath)
+              location + this.getExt(extPath),
             ),
             name,
             unnamedDefault,
@@ -470,14 +470,15 @@ module.exports = class Shrimpit {
             item.unnamedDefault === true &&
             exports.filter(
               element =>
-                Object.keys(item.references).indexOf(element.name) !== -1
+                item.references &&
+                Object.keys(item.references).indexOf(element.name) !== -1,
             ).length > 0
           )
         ) {
           acc.push(item)
         }
         return acc
-      }, [])
+      }, []),
     ).map(({ location, name, unnamedDefault }) => ({
       location,
       name,
