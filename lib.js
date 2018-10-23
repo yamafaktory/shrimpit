@@ -6,7 +6,7 @@ const util = require('util')
 
 const chalk = require('chalk')
 const cheerio = require('cheerio')
-const merge = require('lodash.merge')
+const merge = require('lodash/merge')
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 

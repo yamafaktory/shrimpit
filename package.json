@@ -35,7 +35,7 @@
     "@babel/traverse": "7.1.4",
     "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
-    "lodash.merge": "4.6.1"
+    "lodash": "4.17.11"
   },
   "devDependencies": {
     "babel-eslint": "10.0.1",
