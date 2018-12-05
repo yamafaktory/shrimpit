@@ -9,6 +9,7 @@ const cheerio = require('cheerio')
 const merge = require('lodash/merge')
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
+const globby = require('globby')
 
 const log = i => console.log(i, '\n')
 const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
@@ -115,15 +116,17 @@ module.exports = class Shrimpit {
     process.exit(1)
   }
 
-  exec() {
+  async exec() {
     !this.displayJSON && log(chalk.white.bgMagenta.bold(' Shrimpit! '))
 
     if (this.displayUnknownFlag) return this.renderUnknownFlag()
 
     if (this.displayHelp) return this.renderHelp()
 
+    const paths = await globby(this.src)
+
     // Start reading and parsing the directories.
-    this.src.map(target => this.read(null, target))
+    paths.map(target => this.read(null, target))
 
     if (this.displayJSON) {
       return this.renderToJSON()
