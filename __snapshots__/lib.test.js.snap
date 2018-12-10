@@ -80,6 +80,33 @@ Object {
           ],
         },
       },
+      "import-all": Object {
+        "exports.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/import-all/exports.js",
+              "name": "first",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/import-all/exports.js",
+              "name": "second",
+              "unnamedDefault": false,
+            },
+          ],
+          "imports": Array [],
+        },
+        "imports.js": Object {
+          "exports": Array [],
+          "imports": Array [
+            Object {
+              "location": "test/import-all/exports.js",
+              "name": "numbers",
+              "unnamedDefault": true,
+            },
+          ],
+        },
+      },
     },
   },
   "Unused exports": Array [
@@ -235,6 +262,33 @@ Object {
             },
           ],
           "imports": Array [],
+        },
+      },
+      "import-all": Object {
+        "exports.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/import-all/exports.js",
+              "name": "first",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/import-all/exports.js",
+              "name": "second",
+              "unnamedDefault": false,
+            },
+          ],
+          "imports": Array [],
+        },
+        "imports.js": Object {
+          "exports": Array [],
+          "imports": Array [
+            Object {
+              "location": "test/import-all/exports.js",
+              "name": "numbers",
+              "unnamedDefault": true,
+            },
+          ],
         },
       },
     },

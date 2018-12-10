@@ -14,3 +14,10 @@ describe('globs', () => {
     expect(await outputSnapshot(shrimpit)).toMatchSnapshot()
   })
 })
+
+describe('import * from ...', () => {
+  it('should mark used properties as used exports', async () => {
+    const shrimpit = new Shrimpit(inputPaths('test/import-all/*.js'))
+    expect((await outputSnapshot(shrimpit))['Unused exports']).toMatchSnapshot()
+  })
+})
