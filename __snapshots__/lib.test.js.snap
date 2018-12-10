@@ -1,5 +1,112 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`globs should handle globs correctly 1`] = `
+Object {
+  "Files tree": Object {
+    "test": Object {
+      "a": Object {
+        "a.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/a/a.js",
+              "name": "a",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/a/a.js",
+              "name": "c",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/a/a.js",
+              "name": "d",
+              "unnamedDefault": false,
+            },
+          ],
+          "imports": Array [
+            Object {
+              "location": "test/b/b.js",
+              "name": "test",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/b/b.js",
+              "name": "a",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/c/c.js",
+              "name": "User",
+              "unnamedDefault": false,
+            },
+          ],
+        },
+      },
+      "b": Object {
+        "b.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/b/b.js",
+              "name": "a",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/b/b.js",
+              "name": "b",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/b/b.js",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+          ],
+          "imports": Array [
+            Object {
+              "location": "test/c/c.js",
+              "name": "Cat",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/a/a.js",
+              "name": "test",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/d/d.js",
+              "name": "unamedFunction",
+              "unnamedDefault": true,
+            },
+          ],
+        },
+      },
+    },
+  },
+  "Unused exports": Array [
+    Object {
+      "location": "test/a/a.js",
+      "name": "a",
+      "unnamedDefault": false,
+    },
+    Object {
+      "location": "test/a/a.js",
+      "name": "c",
+      "unnamedDefault": false,
+    },
+    Object {
+      "location": "test/a/a.js",
+      "name": "d",
+      "unnamedDefault": false,
+    },
+    Object {
+      "location": "test/b/b.js",
+      "name": "b",
+      "unnamedDefault": false,
+    },
+  ],
+}
+`;
+
 exports[`should create a snapshot of the files tree and of the unused exports 1`] = `
 Object {
   "Files tree": Object {
@@ -133,112 +240,5 @@ Object {
     },
   },
   "Unused exports": Array [],
-}
-`;
-
-exports[`should handle globs correctly 1`] = `
-Object {
-  "Files tree": Object {
-    "test": Object {
-      "a": Object {
-        "a.js": Object {
-          "exports": Array [
-            Object {
-              "location": "test/a/a.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "c",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "d",
-              "unnamedDefault": false,
-            },
-          ],
-          "imports": Array [
-            Object {
-              "location": "test/b/b.js",
-              "name": "test",
-              "unnamedDefault": true,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/c/c.js",
-              "name": "User",
-              "unnamedDefault": false,
-            },
-          ],
-        },
-      },
-      "b": Object {
-        "b.js": Object {
-          "exports": Array [
-            Object {
-              "location": "test/b/b.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "b",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "default (unnamed)",
-              "unnamedDefault": true,
-            },
-          ],
-          "imports": Array [
-            Object {
-              "location": "test/c/c.js",
-              "name": "Cat",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "test",
-              "unnamedDefault": true,
-            },
-            Object {
-              "location": "test/d/d.js",
-              "name": "unamedFunction",
-              "unnamedDefault": true,
-            },
-          ],
-        },
-      },
-    },
-  },
-  "Unused exports": Array [
-    Object {
-      "location": "test/a/a.js",
-      "name": "a",
-      "unnamedDefault": false,
-    },
-    Object {
-      "location": "test/a/a.js",
-      "name": "c",
-      "unnamedDefault": false,
-    },
-    Object {
-      "location": "test/a/a.js",
-      "name": "d",
-      "unnamedDefault": false,
-    },
-    Object {
-      "location": "test/b/b.js",
-      "name": "b",
-      "unnamedDefault": false,
-    },
-  ],
 }
 `;
