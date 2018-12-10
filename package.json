@@ -28,7 +28,7 @@
   },
   "engines": {
     "npm": ">=3.0.0",
-    "node": ">=7.6.0"
+    "node": ">=8.0.0"
   },
   "dependencies": {
     "@babel/parser": "7.1.3",
