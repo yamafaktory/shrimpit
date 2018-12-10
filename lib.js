@@ -126,7 +126,7 @@ module.exports = class Shrimpit {
     const paths = await globby(this.src)
 
     // Start reading and parsing the directories.
-    paths.map(target => this.read(null, target))
+    paths.sort().map(target => this.read(null, target))
 
     if (this.displayJSON) {
       return this.renderToJSON()
