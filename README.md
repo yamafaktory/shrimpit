@@ -24,6 +24,12 @@ yarn global add shrimpit
 shrimpit path/to/your/files /another/path
 ```
 
+Globbing patterns are also supported:
+
+```shell
+shrimpit test/**/*.js
+```
+
 Adding the `--tree` flag will output the complete files tree with all the imports and the exports per file:
 
 ```shell
