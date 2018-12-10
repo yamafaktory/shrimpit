@@ -7,6 +7,7 @@
   "extends": ["standard", "prettier", "prettier/standard"],
   "globals": {
     "expect": true,
+    "describe": true,
     "it": true
   },
   "parser": "babel-eslint",
