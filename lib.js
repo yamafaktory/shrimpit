@@ -14,6 +14,8 @@ const globby = require('globby')
 const log = i => console.log(i, '\n')
 const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
 
+const DEFAULT_UNAMED = 'default (unnamed)'
+
 module.exports = class Shrimpit {
   constructor(argv) {
     // Remove execPath and path from argv.
@@ -37,10 +39,11 @@ module.exports = class Shrimpit {
         'doExpressions',
         'dynamicImport',
         'exponentiationOperator',
+        'exportDefaultFrom',
         'exportExtensions',
         'flow',
-        'functionSent',
         'functionBind',
+        'functionSent',
         'jsx',
         'objectRestSpread',
         'trailingFunctionCommas',
@@ -258,21 +261,20 @@ module.exports = class Shrimpit {
     const { exports, imports } = this.modules
     const unresolved = exports.reduce((acc, item) => {
       if (
-        imports.filter(
-          element =>
-            element.unnamedDefault
-              ? // Skip the name in the comparison as a default unnamed export
-                // can be imported with any name.
-                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
-                this.deepStrictEqual(
-                  { location: element.location, unnamedDefault: true },
-                  {
-                    location: item.location,
-                    unnamedDefault: item.unnamedDefault,
-                  },
-                )
-              : // Compare the raw element & item.
-                this.deepStrictEqual(element, item),
+        imports.filter(element =>
+          element.unnamedDefault
+            ? // Skip the name in the comparison as a default unnamed export
+              // can be imported with any name.
+              // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
+              this.deepStrictEqual(
+                { location: element.location, unnamedDefault: true },
+                {
+                  location: item.location,
+                  unnamedDefault: item.unnamedDefault,
+                },
+              )
+            : // Compare the raw element & item.
+              this.deepStrictEqual(element, item),
         ).length === 0
       ) {
         acc.push(item)
@@ -310,19 +312,28 @@ module.exports = class Shrimpit {
   walkAST(extPath) {
     let exports = []
     let imports = []
+
     const self = this
+
     const isEnclosedIn = (type, { parentPath }) =>
       parentPath && (parentPath.type === type || isEnclosedIn(type, parentPath))
+
     const pushTo = ({
       location,
       name,
       references = {},
+      reExportAll = false,
       type,
       unnamedDefault = false,
     }) =>
       type === 'exports'
         ? exports.push({
-            location: extPath,
+            location: location
+              ? this.joinPaths(
+                  this.getDir(extPath).join(path.sep),
+                  location + this.getExt(extPath),
+                )
+              : extPath,
             name,
             references,
             unnamedDefault,
@@ -355,7 +366,7 @@ module.exports = class Shrimpit {
         } else {
           // Specify unnamed default export.
           pushTo({
-            name: 'default (unnamed)',
+            name: DEFAULT_UNAMED,
             references: path.scope.parent && path.scope.parent.references,
             type: 'exports',
             unnamedDefault: true,
@@ -377,7 +388,10 @@ module.exports = class Shrimpit {
           !isEnclosedIn('ClassDeclaration', path.parentPath) &&
           // Skip default exports which are traversed by the expression walker
           // of the defaultExportVisitor.
-          !isEnclosedIn('ExportDefaultDeclaration', path.parentPath)
+          !isEnclosedIn('ExportDefaultDeclaration', path.parentPath) &&
+          // Skip exports specifiers that are traversed as StringLiteral.
+          !isEnclosedIn('ExportSpecifier', path) &&
+          !isEnclosedIn('ExportDefaultSpecifier', path)
         ) {
           pushTo({
             name: path.node.name,
@@ -407,6 +421,56 @@ module.exports = class Shrimpit {
               path.parentPath.parent.declaration.type ===
                 'FunctionDeclaration' &&
               !path.parentPath.parent.declaration.id,
+          })
+        }
+      },
+
+      StringLiteral(path) {
+        if (path.parentPath.node.type === 'ExportAllDeclaration') {
+          console.log('*', path.parentPath.node.source.value)
+          pushTo({
+            name: '*',
+            location: path.parentPath.node.source.value,
+            type: 'imports',
+            unnamedDefault: false,
+          })
+          pushTo({
+            name: '*',
+            location: path.parentPath.node.source.value,
+            type: 'exports',
+            unnamedDefault: false,
+          })
+        }
+
+        if (path.parentPath.node.type === 'ExportNamedDeclaration') {
+          path.parentPath.node.specifiers.map(({ local, exported, type }) => {
+            // Reexporting a default as a named default.
+            if (
+              type === 'ExportDefaultSpecifier' &&
+              typeof local === 'undefined'
+            ) {
+              pushTo({
+                name: exported.name,
+                location: path.parentPath.node.source.value,
+                type: 'imports',
+                unnamedDefault: true,
+              })
+            }
+
+            if (type !== 'ExportDefaultSpecifier') {
+              const isDefault = local.name === 'default'
+              pushTo({
+                name: isDefault ? DEFAULT_UNAMED : local.name,
+                location: path.parentPath.node.source.value,
+                type: 'imports',
+                unnamedDefault: type === 'ExportDefaultSpecifier' || isDefault,
+              })
+            }
+            pushTo({
+              name: exported.name,
+              type: 'exports',
+              unnamedDefault: type === 'ExportDefaultSpecifier',
+            })
           })
         }
       },
@@ -466,7 +530,7 @@ module.exports = class Shrimpit {
 
     exports = this.dedupe(
       exports.reduce((acc, item) => {
-        // If we found an unnamed default export an one of its references is
+        // If we found an unnamed default export and one of its references is
         // another export's name skip it as it corresponds to the same export!
         if (
           !(

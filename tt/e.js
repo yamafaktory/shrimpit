@@ -1,0 +1,2 @@
+// e.js
+export default {}

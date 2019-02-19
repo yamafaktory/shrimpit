@@ -1,0 +1,2 @@
+// d.js
+export default {}
