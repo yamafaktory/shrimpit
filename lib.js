@@ -507,10 +507,15 @@ module.exports = class Shrimpit {
               })
             }
 
+            // Here we also want to handle the case of named exports as default
+            // exports.
+            // http://exploringjs.com/es6/ch_modules.html#_making-a-re-export-the-default-export
+            const isNamedExportedAsDefault = exported.name === 'default'
             pushTo({
-              name: exported.name,
+              name: isNamedExportedAsDefault ? DEFAULT_UNAMED : exported.name,
               type: 'exports',
-              unnamedDefault: type === 'ExportDefaultSpecifier',
+              unnamedDefault:
+                type === 'ExportDefaultSpecifier' || isNamedExportedAsDefault,
             })
           })
         }
