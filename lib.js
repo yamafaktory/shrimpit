@@ -50,6 +50,7 @@ module.exports = class Shrimpit {
       ],
       sourceType: 'module',
     }
+    this.reExports = []
     this.src = this.cleanSrc(src)
   }
 
@@ -131,6 +132,9 @@ module.exports = class Shrimpit {
     // Start reading and parsing the directories.
     paths.sort().map(target => this.read(null, target))
 
+    // After generating the files' tree, resolve the re-exports.
+    this.resolveReExports()
+
     if (this.displayJSON) {
       return this.renderToJSON()
     } else {
@@ -164,6 +168,13 @@ module.exports = class Shrimpit {
 
     return path.dirname(
       [...this.getDir(filePath), base === 'index' ? [] : base].join(path.sep),
+    )
+  }
+
+  getTreeProp(path) {
+    return [...this.getDir(path), this.getBase(path)].reduce(
+      (acc, prop) => acc[prop],
+      this.filesTree,
     )
   }
 
@@ -293,6 +304,34 @@ module.exports = class Shrimpit {
     }
   }
 
+  resolveReExports() {
+    this.reExports.map(({ origin, destination }) => {
+      const { imports, exports } = this.getTreeProp(destination)
+      const originNonDefaultImports = this.getTreeProp(origin).exports.filter(
+        ({ unnamedDefault }) => !unnamedDefault,
+      )
+      const destinationNonDefaultExports = originNonDefaultImports.map(
+        ({ location, ...rest }) => ({
+          // Replace the origin location with the destination.
+          location: destination,
+          ...rest,
+        }),
+      )
+
+      this.updateFilesTree(
+        [...this.getDir(destination), this.getBase(destination)],
+        {
+          // Merge the exports of the origin as imports and filter out the
+          // default ones since they are ignored:
+          // http://exploringjs.com/es6/ch_modules.html#sec_importing-exporting-details
+          imports: [...imports, ...originNonDefaultImports],
+          // Reinject the exports of the destination.
+          exports: [...exports, ...destinationNonDefaultExports],
+        },
+      )
+    })
+  }
+
   updateFilesTree(arrayPath, modules = null) {
     const arrayPathCleaned = arrayPath.filter(segment => segment !== '')
 
@@ -318,6 +357,12 @@ module.exports = class Shrimpit {
     const isEnclosedIn = (type, { parentPath }) =>
       parentPath && (parentPath.type === type || isEnclosedIn(type, parentPath))
 
+    const getLocation = location =>
+      this.joinPaths(
+        this.getDir(extPath).join(path.sep),
+        location + this.getExt(extPath),
+      )
+
     const pushTo = ({
       location,
       name,
@@ -328,21 +373,13 @@ module.exports = class Shrimpit {
     }) =>
       type === 'exports'
         ? exports.push({
-            location: location
-              ? this.joinPaths(
-                  this.getDir(extPath).join(path.sep),
-                  location + this.getExt(extPath),
-                )
-              : extPath,
+            location: location ? getLocation(location) : extPath,
             name,
             references,
             unnamedDefault,
           })
         : imports.push({
-            location: this.joinPaths(
-              this.getDir(extPath).join(path.sep),
-              location + this.getExt(extPath),
-            ),
+            location: getLocation(location),
             name,
             unnamedDefault,
           })
@@ -427,18 +464,10 @@ module.exports = class Shrimpit {
 
       StringLiteral(path) {
         if (path.parentPath.node.type === 'ExportAllDeclaration') {
-          console.log('*', path.parentPath.node.source.value)
-          pushTo({
-            name: '*',
-            location: path.parentPath.node.source.value,
-            type: 'imports',
-            unnamedDefault: false,
-          })
-          pushTo({
-            name: '*',
-            location: path.parentPath.node.source.value,
-            type: 'exports',
-            unnamedDefault: false,
+          // Handle special case of re-exports.
+          self.reExports.push({
+            origin: getLocation(path.parentPath.node.source.value),
+            destination: extPath,
           })
         }
 
@@ -466,6 +495,7 @@ module.exports = class Shrimpit {
                 unnamedDefault: type === 'ExportDefaultSpecifier' || isDefault,
               })
             }
+
             pushTo({
               name: exported.name,
               type: 'exports',
