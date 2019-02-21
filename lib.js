@@ -318,6 +318,7 @@ module.exports = class Shrimpit {
         }),
       )
 
+      // Update the file tree.
       this.updateFilesTree(
         [...this.getDir(destination), this.getBase(destination)],
         {
@@ -329,6 +330,16 @@ module.exports = class Shrimpit {
           exports: [...exports, ...destinationNonDefaultExports],
         },
       )
+
+      // Update the modules' imports and exports.
+      this.modules.imports = [
+        ...this.modules.imports,
+        ...originNonDefaultImports,
+      ]
+      this.modules.exports = [
+        ...this.modules.exports,
+        ...destinationNonDefaultExports,
+      ]
     })
   }
 
