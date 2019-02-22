@@ -1,244 +1,432 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`globs should handle globs correctly 1`] = `
+exports[`core functionality should create a snapshot of the files tree and of the unused exports - main 1`] = `
 Object {
   "Files tree": Object {
     "test": Object {
-      "a": Object {
+      "core": Object {
+        "a": Object {
+          "a.js": Object {
+            "exports": Array [
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "c",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "d",
+                "unnamedDefault": false,
+              },
+            ],
+            "imports": Array [
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "test",
+                "unnamedDefault": true,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/c/c.js",
+                "name": "User",
+                "unnamedDefault": false,
+              },
+            ],
+          },
+        },
+        "b": Object {
+          "b.js": Object {
+            "exports": Array [
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "b",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "default (unnamed)",
+                "unnamedDefault": true,
+              },
+            ],
+            "imports": Array [
+              Object {
+                "location": "test/core/c/c.js",
+                "name": "Cat",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "test",
+                "unnamedDefault": true,
+              },
+              Object {
+                "location": "test/core/d/d.js",
+                "name": "unamedFunction",
+                "unnamedDefault": true,
+              },
+            ],
+          },
+        },
+        "c": Object {
+          "c.js": Object {
+            "exports": Array [
+              Object {
+                "location": "test/core/c/c.js",
+                "name": "Cat",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/c/c.js",
+                "name": "User",
+                "unnamedDefault": false,
+              },
+            ],
+            "imports": Array [
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "c",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "d",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "b",
+                "unnamedDefault": false,
+              },
+            ],
+          },
+        },
+        "d": Object {
+          "d.js": Object {
+            "exports": Array [
+              Object {
+                "location": "test/core/d/d.js",
+                "name": "test/core/d",
+                "unnamedDefault": true,
+              },
+            ],
+            "imports": Array [],
+          },
+        },
+      },
+    },
+  },
+  "Unused exports": Array [],
+}
+`;
+
+exports[`core functionality should create a snapshot of the files tree and of the unused exports - re-exports 1`] = `
+Object {
+  "Files tree": Object {
+    "test": Object {
+      "re-exports": Object {
         "a.js": Object {
           "exports": Array [
             Object {
-              "location": "test/a/a.js",
-              "name": "a",
+              "location": "test/re-exports/a.js",
+              "name": "a1",
               "unnamedDefault": false,
             },
             Object {
-              "location": "test/a/a.js",
-              "name": "c",
+              "location": "test/re-exports/a.js",
+              "name": "a2",
               "unnamedDefault": false,
             },
             Object {
-              "location": "test/a/a.js",
-              "name": "d",
+              "location": "test/re-exports/a.js",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+          ],
+          "imports": Array [],
+        },
+        "b.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "bar",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "yack",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "shake",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "wolf",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "a1",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "a2",
               "unnamedDefault": false,
             },
           ],
           "imports": Array [
             Object {
-              "location": "test/b/b.js",
-              "name": "test",
-              "unnamedDefault": true,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "a",
+              "location": "test/re-exports/c.js",
+              "name": "foo",
               "unnamedDefault": false,
             },
             Object {
-              "location": "test/c/c.js",
-              "name": "User",
+              "location": "test/re-exports/c.js",
+              "name": "yack",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/d.js",
+              "name": "shake",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/re-exports/e.js",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/re-exports/a.js",
+              "name": "a1",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/a.js",
+              "name": "a2",
               "unnamedDefault": false,
             },
           ],
         },
-      },
-      "b": Object {
-        "b.js": Object {
+        "c.js": Object {
           "exports": Array [
             Object {
-              "location": "test/b/b.js",
-              "name": "a",
+              "location": "test/re-exports/c.js",
+              "name": "foo",
               "unnamedDefault": false,
             },
             Object {
-              "location": "test/b/b.js",
-              "name": "b",
+              "location": "test/re-exports/c.js",
+              "name": "yack",
               "unnamedDefault": false,
             },
             Object {
-              "location": "test/b/b.js",
+              "location": "test/re-exports/c.js",
               "name": "default (unnamed)",
               "unnamedDefault": true,
             },
           ],
           "imports": Array [
             Object {
-              "location": "test/c/c.js",
-              "name": "Cat",
+              "location": "test/re-exports/b.js",
+              "name": "wolf",
               "unnamedDefault": false,
             },
+          ],
+        },
+        "d.js": Object {
+          "exports": Array [
             Object {
-              "location": "test/a/a.js",
-              "name": "test",
-              "unnamedDefault": true,
-            },
-            Object {
-              "location": "test/d/d.js",
-              "name": "unamedFunction",
+              "location": "test/re-exports/d.js",
+              "name": "default (unnamed)",
               "unnamedDefault": true,
             },
           ],
+          "imports": Array [],
+        },
+        "e.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/re-exports/e.js",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+          ],
+          "imports": Array [],
+        },
+        "f.js": Object {
+          "exports": Array [],
+          "imports": Array [
+            Object {
+              "location": "test/re-exports/a.js",
+              "name": "defaultFromA",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "shake",
+              "unnamedDefault": true,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "a1",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "a2",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "bar",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/b.js",
+              "name": "yack",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/re-exports/c.js",
+              "name": "defaultFromC",
+              "unnamedDefault": true,
+            },
+          ],
+        },
+      },
+    },
+  },
+  "Unused exports": Array [],
+}
+`;
+
+exports[`globs handling should handle globs correctly 1`] = `
+Object {
+  "Files tree": Object {
+    "test": Object {
+      "core": Object {
+        "a": Object {
+          "a.js": Object {
+            "exports": Array [
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "c",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "d",
+                "unnamedDefault": false,
+              },
+            ],
+            "imports": Array [
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "test",
+                "unnamedDefault": true,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/c/c.js",
+                "name": "User",
+                "unnamedDefault": false,
+              },
+            ],
+          },
+        },
+        "b": Object {
+          "b.js": Object {
+            "exports": Array [
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "b",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/b/b.js",
+                "name": "default (unnamed)",
+                "unnamedDefault": true,
+              },
+            ],
+            "imports": Array [
+              Object {
+                "location": "test/core/c/c.js",
+                "name": "Cat",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "test",
+                "unnamedDefault": true,
+              },
+              Object {
+                "location": "test/core/d/d.js",
+                "name": "unamedFunction",
+                "unnamedDefault": true,
+              },
+            ],
+          },
         },
       },
     },
   },
   "Unused exports": Array [
     Object {
-      "location": "test/a/a.js",
+      "location": "test/core/a/a.js",
       "name": "a",
       "unnamedDefault": false,
     },
     Object {
-      "location": "test/a/a.js",
+      "location": "test/core/a/a.js",
       "name": "c",
       "unnamedDefault": false,
     },
     Object {
-      "location": "test/a/a.js",
+      "location": "test/core/a/a.js",
       "name": "d",
       "unnamedDefault": false,
     },
     Object {
-      "location": "test/b/b.js",
+      "location": "test/core/b/b.js",
       "name": "b",
       "unnamedDefault": false,
     },
   ],
-}
-`;
-
-exports[`should create a snapshot of the files tree and of the unused exports 1`] = `
-Object {
-  "Files tree": Object {
-    "test": Object {
-      "a": Object {
-        "a.js": Object {
-          "exports": Array [
-            Object {
-              "location": "test/a/a.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "c",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "d",
-              "unnamedDefault": false,
-            },
-          ],
-          "imports": Array [
-            Object {
-              "location": "test/b/b.js",
-              "name": "test",
-              "unnamedDefault": true,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/c/c.js",
-              "name": "User",
-              "unnamedDefault": false,
-            },
-          ],
-        },
-      },
-      "b": Object {
-        "b.js": Object {
-          "exports": Array [
-            Object {
-              "location": "test/b/b.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "b",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "default (unnamed)",
-              "unnamedDefault": true,
-            },
-          ],
-          "imports": Array [
-            Object {
-              "location": "test/c/c.js",
-              "name": "Cat",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "test",
-              "unnamedDefault": true,
-            },
-            Object {
-              "location": "test/d/d.js",
-              "name": "unamedFunction",
-              "unnamedDefault": true,
-            },
-          ],
-        },
-      },
-      "c": Object {
-        "c.js": Object {
-          "exports": Array [
-            Object {
-              "location": "test/c/c.js",
-              "name": "Cat",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/c/c.js",
-              "name": "User",
-              "unnamedDefault": false,
-            },
-          ],
-          "imports": Array [
-            Object {
-              "location": "test/a/a.js",
-              "name": "a",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "c",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/a/a.js",
-              "name": "d",
-              "unnamedDefault": false,
-            },
-            Object {
-              "location": "test/b/b.js",
-              "name": "b",
-              "unnamedDefault": false,
-            },
-          ],
-        },
-      },
-      "d": Object {
-        "d.js": Object {
-          "exports": Array [
-            Object {
-              "location": "test/d/d.js",
-              "name": "test/d",
-              "unnamedDefault": true,
-            },
-          ],
-          "imports": Array [],
-        },
-      },
-    },
-  },
-  "Unused exports": Array [],
 }
 `;
