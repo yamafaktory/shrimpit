@@ -23,6 +23,7 @@ module.exports = class Shrimpit {
 
     this.allowedTypes = /^\.(jsx?|vue)$/
     this.filesTree = {}
+    this.namespaceImports = []
     this.isVueTemplate = /^\.vue$/
     this.modules = {
       exports: [],
@@ -132,7 +133,10 @@ module.exports = class Shrimpit {
     // Start reading and parsing the directories.
     paths.sort().map(target => this.read(null, target))
 
-    // After generating the files' tree, resolve the re-exports.
+    // Resolve the namespace imports.
+    this.resolveNamespaceImports()
+
+    // Resolve the re-exports.
     this.resolveReExports()
 
     if (this.displayJSON) {
@@ -304,6 +308,30 @@ module.exports = class Shrimpit {
     }
   }
 
+  resolveNamespaceImports() {
+    this.namespaceImports.map(({ origin, destination }) => {
+      const { imports, exports } = this.getTreeProp(destination)
+      const originExportsAsImports = this.getTreeProp(origin).exports
+
+      // Update the file tree.
+      this.updateFilesTree(
+        [...this.getDir(destination), this.getBase(destination)],
+        {
+          // Merge the exports of the origin and the imports of the destination.
+          imports: [...imports, ...originExportsAsImports],
+          // Reinject the exports of the destination.
+          exports,
+        },
+      )
+
+      // Update the modules' imports.
+      this.modules.imports = [
+        ...this.modules.imports,
+        ...originExportsAsImports,
+      ]
+    })
+  }
+
   resolveReExports() {
     this.reExports.map(({ origin, destination }) => {
       const { imports, exports } = this.getTreeProp(destination)
@@ -406,10 +434,14 @@ module.exports = class Shrimpit {
             isEnclosedIn('FunctionDeclaration', path.parentPath) ||
             isEnclosedIn('VariableDeclaration', path.parentPath))
         ) {
-          // Classes, functions and variables as exports are named in this.
+          // Classes, functions and variables as exports are named here.
           pushTo({
             name: path.scope.parent.path.node.id.name,
             type: 'exports',
+            unnamedDefault: isEnclosedIn(
+              'ExportDefaultDeclaration',
+              path.parentPath,
+            ),
           })
         } else {
           // Specify unnamed default export.
@@ -557,11 +589,11 @@ module.exports = class Shrimpit {
       },
 
       ImportNamespaceSpecifier(path) {
-        pushTo({
-          location: path.parent.source.value,
-          name: path.node.local.name,
-          type: 'imports',
-          unnamedDefault: true,
+        // Handle special case of the namespace imports where all the exports of
+        // the origin are going to be consumed.
+        self.namespaceImports.push({
+          origin: getLocation(path.parent.source.value),
+          destination: extPath,
         })
       },
 
@@ -582,9 +614,9 @@ module.exports = class Shrimpit {
           !(
             item.unnamedDefault === true &&
             exports.filter(
-              element =>
+              ({ name }) =>
                 item.references &&
-                Object.keys(item.references).indexOf(element.name) !== -1,
+                Object.keys(item.references).indexOf(name) !== -1,
             ).length > 0
           )
         ) {

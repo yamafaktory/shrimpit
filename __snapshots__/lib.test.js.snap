@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`core functionality should create a snapshot of the files tree and of the unused exports - main 1`] = `
+exports[`core functionality should create a snapshot of the files tree and of the unused exports - core 1`] = `
 Object {
   "Files tree": Object {
     "test": Object {
@@ -21,7 +21,7 @@ Object {
               Object {
                 "location": "test/core/a/a.js",
                 "name": "d",
-                "unnamedDefault": false,
+                "unnamedDefault": true,
               },
             ],
             "imports": Array [
@@ -38,7 +38,7 @@ Object {
               Object {
                 "location": "test/core/c/c.js",
                 "name": "User",
-                "unnamedDefault": false,
+                "unnamedDefault": true,
               },
             ],
           },
@@ -69,13 +69,23 @@ Object {
                 "unnamedDefault": false,
               },
               Object {
-                "location": "test/core/a/a.js",
-                "name": "test",
+                "location": "test/core/d/d.js",
+                "name": "unamedFunction",
                 "unnamedDefault": true,
               },
               Object {
-                "location": "test/core/d/d.js",
-                "name": "unamedFunction",
+                "location": "test/core/a/a.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "c",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "d",
                 "unnamedDefault": true,
               },
             ],
@@ -92,7 +102,7 @@ Object {
               Object {
                 "location": "test/core/c/c.js",
                 "name": "User",
-                "unnamedDefault": false,
+                "unnamedDefault": true,
               },
             ],
             "imports": Array [
@@ -130,6 +140,58 @@ Object {
             ],
             "imports": Array [],
           },
+        },
+      },
+    },
+  },
+  "Unused exports": Array [],
+}
+`;
+
+exports[`core functionality should create a snapshot of the files tree and of the unused exports - namespace-imports 1`] = `
+Object {
+  "Files tree": Object {
+    "test": Object {
+      "namespace-imports": Object {
+        "a.js": Object {
+          "exports": Array [
+            Object {
+              "location": "test/namespace-imports/a.js",
+              "name": "a1",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/namespace-imports/a.js",
+              "name": "a2",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/namespace-imports/a.js",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+          ],
+          "imports": Array [],
+        },
+        "b.js": Object {
+          "exports": Array [],
+          "imports": Array [
+            Object {
+              "location": "test/namespace-imports/a.js",
+              "name": "a1",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/namespace-imports/a.js",
+              "name": "a2",
+              "unnamedDefault": false,
+            },
+            Object {
+              "location": "test/namespace-imports/a.js",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+          ],
         },
       },
     },
@@ -343,7 +405,7 @@ Object {
               Object {
                 "location": "test/core/a/a.js",
                 "name": "d",
-                "unnamedDefault": false,
+                "unnamedDefault": true,
               },
             ],
             "imports": Array [
@@ -360,7 +422,7 @@ Object {
               Object {
                 "location": "test/core/c/c.js",
                 "name": "User",
-                "unnamedDefault": false,
+                "unnamedDefault": true,
               },
             ],
           },
@@ -391,13 +453,23 @@ Object {
                 "unnamedDefault": false,
               },
               Object {
-                "location": "test/core/a/a.js",
-                "name": "test",
+                "location": "test/core/d/d.js",
+                "name": "unamedFunction",
                 "unnamedDefault": true,
               },
               Object {
-                "location": "test/core/d/d.js",
-                "name": "unamedFunction",
+                "location": "test/core/a/a.js",
+                "name": "a",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "c",
+                "unnamedDefault": false,
+              },
+              Object {
+                "location": "test/core/a/a.js",
+                "name": "d",
                 "unnamedDefault": true,
               },
             ],
@@ -407,21 +479,6 @@ Object {
     },
   },
   "Unused exports": Array [
-    Object {
-      "location": "test/core/a/a.js",
-      "name": "a",
-      "unnamedDefault": false,
-    },
-    Object {
-      "location": "test/core/a/a.js",
-      "name": "c",
-      "unnamedDefault": false,
-    },
-    Object {
-      "location": "test/core/a/a.js",
-      "name": "d",
-      "unnamedDefault": false,
-    },
     Object {
       "location": "test/core/b/b.js",
       "name": "b",
