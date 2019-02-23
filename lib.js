@@ -14,6 +14,8 @@ const globby = require('globby')
 const log = i => console.log(i, '\n')
 const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
 
+const DEFAULT_UNAMED = 'default (unnamed)'
+
 module.exports = class Shrimpit {
   constructor(argv) {
     // Remove execPath and path from argv.
@@ -21,6 +23,7 @@ module.exports = class Shrimpit {
 
     this.allowedTypes = /^\.(jsx?|vue)$/
     this.filesTree = {}
+    this.namespaceImports = []
     this.isVueTemplate = /^\.vue$/
     this.modules = {
       exports: [],
@@ -37,16 +40,18 @@ module.exports = class Shrimpit {
         'doExpressions',
         'dynamicImport',
         'exponentiationOperator',
+        'exportDefaultFrom',
         'exportExtensions',
         'flow',
-        'functionSent',
         'functionBind',
+        'functionSent',
         'jsx',
         'objectRestSpread',
         'trailingFunctionCommas',
       ],
       sourceType: 'module',
     }
+    this.reExports = []
     this.src = this.cleanSrc(src)
   }
 
@@ -128,6 +133,12 @@ module.exports = class Shrimpit {
     // Start reading and parsing the directories.
     paths.sort().map(target => this.read(null, target))
 
+    // Resolve the namespace imports.
+    this.resolveNamespaceImports()
+
+    // Resolve the re-exports.
+    this.resolveReExports()
+
     if (this.displayJSON) {
       return this.renderToJSON()
     } else {
@@ -161,6 +172,13 @@ module.exports = class Shrimpit {
 
     return path.dirname(
       [...this.getDir(filePath), base === 'index' ? [] : base].join(path.sep),
+    )
+  }
+
+  getTreeProp(path) {
+    return [...this.getDir(path), this.getBase(path)].reduce(
+      (acc, prop) => acc[prop],
+      this.filesTree,
     )
   }
 
@@ -258,21 +276,20 @@ module.exports = class Shrimpit {
     const { exports, imports } = this.modules
     const unresolved = exports.reduce((acc, item) => {
       if (
-        imports.filter(
-          element =>
-            element.unnamedDefault
-              ? // Skip the name in the comparison as a default unnamed export
-                // can be imported with any name.
-                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
-                this.deepStrictEqual(
-                  { location: element.location, unnamedDefault: true },
-                  {
-                    location: item.location,
-                    unnamedDefault: item.unnamedDefault,
-                  },
-                )
-              : // Compare the raw element & item.
-                this.deepStrictEqual(element, item),
+        imports.filter(element =>
+          element.unnamedDefault
+            ? // Skip the name in the comparison as a default unnamed export
+              // can be imported with any name.
+              // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
+              this.deepStrictEqual(
+                { location: element.location, unnamedDefault: true },
+                {
+                  location: item.location,
+                  unnamedDefault: item.unnamedDefault,
+                },
+              )
+            : // Compare the raw element & item.
+              this.deepStrictEqual(element, item),
         ).length === 0
       ) {
         acc.push(item)
@@ -289,6 +306,69 @@ module.exports = class Shrimpit {
         log(chalk.yellow('All Clear Ahead, Captain.'))
       else objectLog([...unresolved])
     }
+  }
+
+  resolveNamespaceImports() {
+    this.namespaceImports.map(({ origin, destination }) => {
+      const { imports, exports } = this.getTreeProp(destination)
+      const originExportsAsImports = this.getTreeProp(origin).exports
+
+      // Update the file tree.
+      this.updateFilesTree(
+        [...this.getDir(destination), this.getBase(destination)],
+        {
+          // Merge the exports of the origin and the imports of the destination.
+          imports: [...imports, ...originExportsAsImports],
+          // Reinject the exports of the destination.
+          exports,
+        },
+      )
+
+      // Update the modules' imports.
+      this.modules.imports = [
+        ...this.modules.imports,
+        ...originExportsAsImports,
+      ]
+    })
+  }
+
+  resolveReExports() {
+    this.reExports.map(({ origin, destination }) => {
+      const { imports, exports } = this.getTreeProp(destination)
+      const originNonDefaultImports = this.getTreeProp(origin).exports.filter(
+        ({ unnamedDefault }) => !unnamedDefault,
+      )
+      const destinationNonDefaultExports = originNonDefaultImports.map(
+        ({ location, ...rest }) => ({
+          // Replace the origin location with the destination.
+          location: destination,
+          ...rest,
+        }),
+      )
+
+      // Update the file tree.
+      this.updateFilesTree(
+        [...this.getDir(destination), this.getBase(destination)],
+        {
+          // Merge the exports of the origin as imports and filter out the
+          // default ones since they are ignored:
+          // http://exploringjs.com/es6/ch_modules.html#sec_importing-exporting-details
+          imports: [...imports, ...originNonDefaultImports],
+          // Reinject the exports of the destination.
+          exports: [...exports, ...destinationNonDefaultExports],
+        },
+      )
+
+      // Update the modules' imports and exports.
+      this.modules.imports = [
+        ...this.modules.imports,
+        ...originNonDefaultImports,
+      ]
+      this.modules.exports = [
+        ...this.modules.exports,
+        ...destinationNonDefaultExports,
+      ]
+    })
   }
 
   updateFilesTree(arrayPath, modules = null) {
@@ -310,28 +390,35 @@ module.exports = class Shrimpit {
   walkAST(extPath) {
     let exports = []
     let imports = []
+
     const self = this
+
     const isEnclosedIn = (type, { parentPath }) =>
       parentPath && (parentPath.type === type || isEnclosedIn(type, parentPath))
+
+    const getLocation = location =>
+      this.joinPaths(
+        this.getDir(extPath).join(path.sep),
+        location + this.getExt(extPath),
+      )
+
     const pushTo = ({
       location,
       name,
       references = {},
+      reExportAll = false,
       type,
       unnamedDefault = false,
     }) =>
       type === 'exports'
         ? exports.push({
-            location: extPath,
+            location: location ? getLocation(location) : extPath,
             name,
             references,
             unnamedDefault,
           })
         : imports.push({
-            location: this.joinPaths(
-              this.getDir(extPath).join(path.sep),
-              location + this.getExt(extPath),
-            ),
+            location: getLocation(location),
             name,
             unnamedDefault,
           })
@@ -347,15 +434,19 @@ module.exports = class Shrimpit {
             isEnclosedIn('FunctionDeclaration', path.parentPath) ||
             isEnclosedIn('VariableDeclaration', path.parentPath))
         ) {
-          // Classes, functions and variables as exports are named in this.
+          // Classes, functions and variables as exports are named here.
           pushTo({
             name: path.scope.parent.path.node.id.name,
             type: 'exports',
+            unnamedDefault: isEnclosedIn(
+              'ExportDefaultDeclaration',
+              path.parentPath,
+            ),
           })
         } else {
           // Specify unnamed default export.
           pushTo({
-            name: 'default (unnamed)',
+            name: DEFAULT_UNAMED,
             references: path.scope.parent && path.scope.parent.references,
             type: 'exports',
             unnamedDefault: true,
@@ -377,7 +468,10 @@ module.exports = class Shrimpit {
           !isEnclosedIn('ClassDeclaration', path.parentPath) &&
           // Skip default exports which are traversed by the expression walker
           // of the defaultExportVisitor.
-          !isEnclosedIn('ExportDefaultDeclaration', path.parentPath)
+          !isEnclosedIn('ExportDefaultDeclaration', path.parentPath) &&
+          // Skip exports specifiers that are traversed as StringLiteral.
+          !isEnclosedIn('ExportSpecifier', path) &&
+          !isEnclosedIn('ExportDefaultSpecifier', path)
         ) {
           pushTo({
             name: path.node.name,
@@ -407,6 +501,54 @@ module.exports = class Shrimpit {
               path.parentPath.parent.declaration.type ===
                 'FunctionDeclaration' &&
               !path.parentPath.parent.declaration.id,
+          })
+        }
+      },
+
+      StringLiteral(path) {
+        if (path.parentPath.node.type === 'ExportAllDeclaration') {
+          // Handle special case of re-exports.
+          self.reExports.push({
+            origin: getLocation(path.parentPath.node.source.value),
+            destination: extPath,
+          })
+        }
+
+        if (path.parentPath.node.type === 'ExportNamedDeclaration') {
+          path.parentPath.node.specifiers.map(({ local, exported, type }) => {
+            // Reexporting a default as a named default.
+            if (
+              type === 'ExportDefaultSpecifier' &&
+              typeof local === 'undefined'
+            ) {
+              pushTo({
+                name: exported.name,
+                location: path.parentPath.node.source.value,
+                type: 'imports',
+                unnamedDefault: true,
+              })
+            }
+
+            if (type !== 'ExportDefaultSpecifier') {
+              const isDefault = local.name === 'default'
+              pushTo({
+                name: isDefault ? DEFAULT_UNAMED : local.name,
+                location: path.parentPath.node.source.value,
+                type: 'imports',
+                unnamedDefault: type === 'ExportDefaultSpecifier' || isDefault,
+              })
+            }
+
+            // Here we also want to handle the case of named exports as default
+            // exports.
+            // http://exploringjs.com/es6/ch_modules.html#_making-a-re-export-the-default-export
+            const isNamedExportedAsDefault = exported.name === 'default'
+            pushTo({
+              name: isNamedExportedAsDefault ? DEFAULT_UNAMED : exported.name,
+              type: 'exports',
+              unnamedDefault:
+                type === 'ExportDefaultSpecifier' || isNamedExportedAsDefault,
+            })
           })
         }
       },
@@ -447,11 +589,11 @@ module.exports = class Shrimpit {
       },
 
       ImportNamespaceSpecifier(path) {
-        pushTo({
-          location: path.parent.source.value,
-          name: path.node.local.name,
-          type: 'imports',
-          unnamedDefault: true,
+        // Handle special case of the namespace imports where all the exports of
+        // the origin are going to be consumed.
+        self.namespaceImports.push({
+          origin: getLocation(path.parent.source.value),
+          destination: extPath,
         })
       },
 
@@ -466,15 +608,15 @@ module.exports = class Shrimpit {
 
     exports = this.dedupe(
       exports.reduce((acc, item) => {
-        // If we found an unnamed default export an one of its references is
+        // If we found an unnamed default export and one of its references is
         // another export's name skip it as it corresponds to the same export!
         if (
           !(
             item.unnamedDefault === true &&
             exports.filter(
-              element =>
+              ({ name }) =>
                 item.references &&
-                Object.keys(item.references).indexOf(element.name) !== -1,
+                Object.keys(item.references).indexOf(name) !== -1,
             ).length > 0
           )
         ) {
