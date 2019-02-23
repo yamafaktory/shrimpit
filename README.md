@@ -45,45 +45,82 @@ shrimpit test --tree
  > Files tree
 
 { test:
-   { a:
-      { 'a.js':
-         { imports:
-            [ { location: 'test/b/b.js', name: 'test', unnamedDefault: true },
-              { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
-              { location: 'test/c/c.js', name: 'User', unnamedDefault: false } ],
-           exports:
-            [ { location: 'test/a/a.js', name: 'a', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'c', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'd', unnamedDefault: false } ] } },
-     b:
-      { 'b.js':
-         { imports:
-            [ { location: 'test/c/c.js', name: 'Cat', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'test', unnamedDefault: true },
-              { location: 'test/d/d.js',
-                name: 'unamedFunction',
-                unnamedDefault: true } ],
-           exports:
-            [ { location: 'test/b/b.js', name: 'a', unnamedDefault: false },
-              { location: 'test/b/b.js', name: 'b', unnamedDefault: false },
-              { location: 'test/b/b.js',
-                name: 'default (unnamed)',
-                unnamedDefault: true } ] } },
-     c:
-      { 'c.js':
-         { imports:
-            [ { location: 'test/a/a.js', name: 'a', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'c', unnamedDefault: false },
-              { location: 'test/a/a.js', name: 'd', unnamedDefault: false },
-              { location: 'test/b/b.js', name: 'b', unnamedDefault: false } ],
-           exports:
-            [ { location: 'test/c/c.js', name: 'Cat', unnamedDefault: false },
-              { location: 'test/c/c.js', name: 'User', unnamedDefault: false } ] } },
-     d:
-      { 'd.js':
-         { imports: [],
-           exports:
-            [ { location: 'test/d/d.js', name: 'test/d', unnamedDefault: true } ] } } } }
+   { core:
+      { a:
+         { 'a.js':
+            { imports:
+               [ { location: 'test/core/b/b.js',
+                   name: 'test',
+                   unnamedDefault: true },
+                 { location: 'test/core/b/b.js',
+                   name: 'a',
+                   unnamedDefault: false },
+                 { location: 'test/core/c/c.js',
+                   name: 'User',
+                   unnamedDefault: true } ],
+              exports:
+               [ { location: 'test/core/a/a.js',
+                   name: 'a',
+                   unnamedDefault: false },
+                 { location: 'test/core/a/a.js',
+                   name: 'c',
+                   unnamedDefault: false },
+                 { location: 'test/core/a/a.js', name: 'd', unnamedDefault: true } ] } },
+        b:
+         { 'b.js':
+            { imports:
+               [ { location: 'test/core/c/c.js',
+                   name: 'Cat',
+                   unnamedDefault: false },
+                 { location: 'test/core/d/d.js',
+                   name: 'unamedFunction',
+                   unnamedDefault: true },
+                 { location: 'test/core/a/a.js',
+                   name: 'a',
+                   unnamedDefault: false },
+                 { location: 'test/core/a/a.js',
+                   name: 'c',
+                   unnamedDefault: false },
+                 { location: 'test/core/a/a.js', name: 'd', unnamedDefault: true } ],
+              exports:
+               [ { location: 'test/core/b/b.js',
+                   name: 'a',
+                   unnamedDefault: false },
+                 { location: 'test/core/b/b.js',
+                   name: 'b',
+                   unnamedDefault: false },
+                 { location: 'test/core/b/b.js',
+                   name: 'default (unnamed)',
+                   unnamedDefault: true } ] } },
+        c:
+         { 'c.js':
+            { imports:
+               [ { location: 'test/core/a/a.js',
+                   name: 'a',
+                   unnamedDefault: false },
+                 { location: 'test/core/a/a.js',
+                   name: 'c',
+                   unnamedDefault: false },
+                 { location: 'test/core/a/a.js',
+                   name: 'd',
+                   unnamedDefault: false },
+                 { location: 'test/core/b/b.js',
+                   name: 'b',
+                   unnamedDefault: false } ],
+              exports:
+               [ { location: 'test/core/c/c.js',
+                   name: 'Cat',
+                   unnamedDefault: false },
+                 { location: 'test/core/c/c.js',
+                   name: 'User',
+                   unnamedDefault: true } ] } },
+        d:
+         { 'd.js':
+            { imports: [],
+              exports:
+               [ { location: 'test/core/d/d.js',
+                   name: 'test/core/d',
+                   unnamedDefault: true } ] } } } } }
 
  > Unused exports
 
