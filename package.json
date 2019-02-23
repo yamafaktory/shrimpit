@@ -66,7 +66,7 @@
   "scripts": {
     "lint": "eslint --cache --ext .js .",
     "prettier": "prettier --write",
-    "preversion": "git pull && yarn && yarn lint --quiet",
+    "preversion": "git pull && yarn && yarn lint --quiet && yarn audit",
     "postversion": "git push --tags origin HEAD",
     "test": "jest"
   },
