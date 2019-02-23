@@ -6,10 +6,10 @@ const util = require('util')
 
 const chalk = require('chalk')
 const cheerio = require('cheerio')
+const globby = require('globby')
 const merge = require('lodash/merge')
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
-const globby = require('globby')
 
 const log = i => console.log(i, '\n')
 const objectLog = o => console.log(util.inspect(o, false, null, true), '\n')
@@ -21,7 +21,7 @@ module.exports = class Shrimpit {
     // Remove execPath and path from argv.
     const [, , ...src] = argv
 
-    this.allowedTypes = /^\.(jsx?|vue)$/
+    this.allowedTypes = /^\.(jsx?|tsx?|vue)$/
     this.filesTree = {}
     this.namespaceImports = []
     this.isVueTemplate = /^\.vue$/
@@ -29,6 +29,7 @@ module.exports = class Shrimpit {
       exports: [],
       imports: [],
     }
+    this.src = this.cleanSrc(src)
     this.parseOpts = {
       allowImportExportEverywhere: true,
       plugins: [
@@ -42,17 +43,17 @@ module.exports = class Shrimpit {
         'exponentiationOperator',
         'exportDefaultFrom',
         'exportExtensions',
-        'flow',
         'functionBind',
         'functionSent',
         'jsx',
         'objectRestSpread',
         'trailingFunctionCommas',
+        // Babel can't parse both at the same time!
+        this.parseTypeScript ? 'typescript' : 'flow',
       ],
       sourceType: 'module',
     }
     this.reExports = []
-    this.src = this.cleanSrc(src)
   }
 
   addDir(extPath) {
@@ -84,6 +85,10 @@ module.exports = class Shrimpit {
 
           case 'tree':
             this.displayTree = true
+            break
+
+          case 'typescript':
+            this.parseTypeScript = true
             break
 
           default:
@@ -177,7 +182,7 @@ module.exports = class Shrimpit {
 
   getTreeProp(path) {
     return [...this.getDir(path), this.getBase(path)].reduce(
-      (acc, prop) => acc[prop],
+      (acc = {}, prop) => acc[prop],
       this.filesTree,
     )
   }
@@ -311,7 +316,10 @@ module.exports = class Shrimpit {
   resolveNamespaceImports() {
     this.namespaceImports.map(({ origin, destination }) => {
       const { imports, exports } = this.getTreeProp(destination)
-      const originExportsAsImports = this.getTreeProp(origin).exports
+      const originTreeProp = this.getTreeProp(origin)
+      const originExportsAsImports = originTreeProp
+        ? originTreeProp.exports
+        : []
 
       // Update the file tree.
       this.updateFilesTree(
@@ -335,9 +343,11 @@ module.exports = class Shrimpit {
   resolveReExports() {
     this.reExports.map(({ origin, destination }) => {
       const { imports, exports } = this.getTreeProp(destination)
-      const originNonDefaultImports = this.getTreeProp(origin).exports.filter(
-        ({ unnamedDefault }) => !unnamedDefault,
-      )
+      const originTreeProp = this.getTreeProp(origin)
+      const originNonDefaultImports = (originTreeProp
+        ? originTreeProp.exports
+        : []
+      ).filter(({ unnamedDefault }) => !unnamedDefault)
       const destinationNonDefaultExports = originNonDefaultImports.map(
         ({ location, ...rest }) => ({
           // Replace the origin location with the destination.

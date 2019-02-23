@@ -22,7 +22,16 @@ describe('core functionality', () => {
 
 describe('globs handling', () => {
   it('should handle globs correctly', async () => {
-    const shrimpit = new Shrimpit(inputPaths('test/core/**/*.js', '!**/(c|d)/*'))
+    const shrimpit = new Shrimpit(
+      inputPaths('test/core/**/*.js', '!**/(c|d)/*'),
+    )
     expect(await outputSnapshot(shrimpit)).toMatchSnapshot()
+  })
+})
+
+describe('typescript support', () => {
+  it('should create a snapshot of the files tree and of the unused exports - typescript', async () => {
+    const shrimpit = new Shrimpit(inputPaths('test/typescript', '--typescript'))
+    await outputSnapshot(shrimpit)
   })
 })

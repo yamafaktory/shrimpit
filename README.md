@@ -131,6 +131,16 @@ All Clear Ahead, Captain.
 
 Shrimpit supports [Flow annotations](https://flowtype.org/) and Vue templates out of the box!
 
+# TypeScript (experimental)
+
+Since Babel 7, the TypeScript AST can directly be parsed. You can use the `--typescript` flag to enable it:
+
+```shell
+shrimpit --tree --typescript path/to/your/files
+```
+
+Please note that the Flow and TypeScript parsers are mutually exclusive.
+
 ## Linting
 
 The code quality is checked by the [JavaScript Standard Style](http://standardjs.com/).
