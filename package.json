@@ -36,7 +36,7 @@
     "@babel/traverse": "7.3.4",
     "chalk": "2.4.2",
     "cheerio": "1.0.0-rc.2",
-    "globby": "9.0.0",
+    "globby": "9.1.0",
     "lodash": "4.17.11"
   },
   "devDependencies": {
