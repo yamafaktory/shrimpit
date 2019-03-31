@@ -181,10 +181,11 @@ module.exports = class Shrimpit {
   }
 
   getTreeProp(path) {
-    return [...this.getDir(path), this.getBase(path)].reduce(
-      (acc = {}, prop) => acc[prop],
-      this.filesTree,
-    )
+    return [
+      // Skip the directory path if it's an empty string.
+      ...this.getDir(path).filter(path => path !== ''),
+      this.getBase(path),
+    ].reduce((acc = {}, prop) => acc[prop], this.filesTree)
   }
 
   isDir(target) {
