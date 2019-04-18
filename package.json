@@ -32,8 +32,8 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@babel/parser": "7.4.0",
-    "@babel/traverse": "7.4.0",
+    "@babel/parser": "7.4.3",
+    "@babel/traverse": "7.4.3",
     "chalk": "2.4.2",
     "cheerio": "1.0.0-rc.3",
     "globby": "9.1.0",
