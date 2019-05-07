@@ -56,8 +56,9 @@
   "resolutions": {
     "atob": ">=2.1.0",
     "cryptiles": ">=4.1.2",
+    "handlebars": "4.1.2",
     "hoek": ">=4.2.1",
-    "js-yaml": ">=3.13.0",
+    "js-yaml": ">=3.13.1",
     "lodash": ">=4.17.5",
     "merge": ">=1.2.1",
     "sshpk": ">=1.13.2"
