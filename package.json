@@ -1,6 +1,6 @@
 {
   "name": "shrimpit",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "title": "shrimpit",
   "description": "A CLI analysis tool for checking unused JavaScript, JSX & Vue templates ES6 exports in your project.",
   "keywords": [
