@@ -21,7 +21,7 @@ module.exports = class Shrimpit {
     // Remove execPath and path from argv.
     const [, , ...src] = argv
 
-    this.allowedTypes = /^\.(jsx?|tsx?|vue)$/
+    this.allowedTypes = /^\.(mjs|jsx?|tsx?|vue)$/
     this.filesTree = {}
     this.namespaceImports = []
     this.isVueTemplate = /^\.vue$/
