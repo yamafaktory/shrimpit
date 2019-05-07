@@ -18,6 +18,11 @@ describe('core functionality', () => {
     const shrimpit = new Shrimpit(inputPaths('test/namespace-imports'))
     expect(await outputSnapshot(shrimpit)).toMatchSnapshot()
   })
+
+  it('should handle .mjs files - mjs', async () => {
+    const shrimpit = new Shrimpit(inputPaths('test/mjs'))
+    expect(await outputSnapshot(shrimpit)).toMatchSnapshot()
+  })
 })
 
 describe('globs handling', () => {

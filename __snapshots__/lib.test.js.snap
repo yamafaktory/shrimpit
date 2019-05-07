@@ -384,6 +384,34 @@ Object {
 }
 `;
 
+exports[`core functionality should handle .mjs files - mjs 1`] = `
+Object {
+  "Files tree": Object {
+    "test": Object {
+      "mjs": Object {
+        "a.mjs": Object {
+          "exports": Array [
+            Object {
+              "location": "test/mjs/a.mjs",
+              "name": "default (unnamed)",
+              "unnamedDefault": true,
+            },
+          ],
+          "imports": Array [],
+        },
+      },
+    },
+  },
+  "Unused exports": Array [
+    Object {
+      "location": "test/mjs/a.mjs",
+      "name": "default (unnamed)",
+      "unnamedDefault": true,
+    },
+  ],
+}
+`;
+
 exports[`globs handling should handle globs correctly 1`] = `
 Object {
   "Files tree": Object {
