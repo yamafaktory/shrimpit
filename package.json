@@ -32,19 +32,19 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@babel/parser": "7.4.4",
-    "@babel/traverse": "7.4.4",
+    "@babel/parser": "7.4.5",
+    "@babel/traverse": "7.4.5",
     "chalk": "2.4.2",
     "cheerio": "1.0.0-rc.3",
     "globby": "9.2.0",
     "lodash": "4.17.11"
   },
   "devDependencies": {
-    "babel-eslint": "10.0.1",
-    "eslint": "5.16.0",
+    "babel-eslint": "10.0.2",
+    "eslint": "6.0.0,
     "eslint-config-prettier": "4.3.0",
     "eslint-config-standard": "12.0.0",
-    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-import": "2.18.0",
     "eslint-plugin-node": "9.1.0",
     "eslint-plugin-standard": "4.0.0",
     "husky": "2.0.0",
