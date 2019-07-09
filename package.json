@@ -37,7 +37,8 @@
     "chalk": "2.4.2",
     "cheerio": "1.0.0-rc.3",
     "globby": "9.2.0",
-    "lodash": "4.17.11"
+    "lodash": "4.17.11",
+    "snyk": "^1.192.4"
   },
   "devDependencies": {
     "babel-eslint": "10.0.2",
@@ -71,7 +72,9 @@
     "prettier": "prettier --write",
     "preversion": "git pull && yarn && yarn lint --quiet && yarn audit",
     "postversion": "git push --tags origin HEAD",
-    "test": "jest"
+    "test": "jest",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "lint-staged": {
     "*.{js}": [
@@ -86,5 +89,6 @@
     "singleQuote": true,
     "trailingComma": "all",
     "useTabs": false
-  }
+  },
+  "snyk": true
 }
