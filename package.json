@@ -37,7 +37,7 @@
     "chalk": "2.4.2",
     "cheerio": "1.0.0-rc.3",
     "globby": "9.2.0",
-    "lodash": "4.17.11"
+    "lodash": "4.17.13"
   },
   "devDependencies": {
     "babel-eslint": "10.0.2",
