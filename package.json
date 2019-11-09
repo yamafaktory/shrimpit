@@ -34,7 +34,7 @@
   "dependencies": {
     "@babel/parser": "7.4.5",
     "@babel/traverse": "7.4.5",
-    "chalk": "2.4.2",
+    "chalk": "3.0.0",
     "cheerio": "1.0.0-rc.3",
     "globby": "9.2.0",
     "lodash": "4.17.11"
