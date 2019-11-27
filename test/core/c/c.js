@@ -13,11 +13,14 @@ const Global = {}
 
 export default class User extends b {
   static a = {}
+
   walk() {
     console.log("I'm walking")
   }
+
   test = () => {
     const useless = true
+
     if (useless) {
       Global.method(this.objProperty, this.objProperty2, {
         ...GLOBAL_OPTIONS,
