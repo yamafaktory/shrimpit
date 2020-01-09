@@ -47,7 +47,7 @@
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-node": "10.0.0",
     "eslint-plugin-standard": "4.0.1",
-    "husky": "3.1.0",
+    "husky": "4.0.2",
     "jest": "24.9.0",
     "lint-staged": "9.5.0",
     "snazzy": "8.0.0",
