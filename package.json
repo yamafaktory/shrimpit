@@ -51,7 +51,7 @@
     "jest": "24.9.0",
     "lint-staged": "9.5.0",
     "snazzy": "8.0.0",
-    "standard": "14.3.1"
+    "standard": "14.3.2"
   },
   "resolutions": {
     "atob": ">=2.1.0",
