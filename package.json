@@ -36,7 +36,8 @@
     "chalk": "4.0.0",
     "cheerio": "1.0.0-rc.3",
     "globby": "11.0.0",
-    "lodash": "4.17.15"
+    "lodash": "4.17.15",
+    "snyk": "^1.318.0"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",
@@ -76,7 +77,9 @@
     "prettier": "prettier --write",
     "preversion": "git pull && yarn && yarn lint --quiet && yarn audit",
     "postversion": "git push --tags origin HEAD",
-    "test": "jest"
+    "test": "jest",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "husky": {
     "hooks": {
@@ -96,5 +99,6 @@
     "singleQuote": true,
     "trailingComma": "all",
     "useTabs": false
-  }
+  },
+  "snyk": true
 }
