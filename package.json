@@ -34,7 +34,7 @@
     "@babel/parser": "7.9.6",
     "@babel/traverse": "7.9.6",
     "chalk": "4.0.0",
-    "cheerio": "1.0.0-rc.3",
+    "cheerio": "1.0.0",
     "globby": "11.0.0",
     "lodash": "4.17.15"
   },
